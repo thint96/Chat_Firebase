@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">ChatApp</string>
+    <string name="login_failed">Login failed!</string>
 </resources>
