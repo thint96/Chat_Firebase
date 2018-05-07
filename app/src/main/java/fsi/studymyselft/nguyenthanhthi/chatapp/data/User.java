@@ -1,5 +1,8 @@
 package fsi.studymyselft.nguyenthanhthi.chatapp.data;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by thanhthi on 04/05/2018.
  */
@@ -35,5 +38,13 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("id", id);
+        result.put("email", email);
+
+        return result;
     }
 }

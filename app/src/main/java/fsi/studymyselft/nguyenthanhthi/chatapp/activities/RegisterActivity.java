@@ -23,6 +23,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -38,8 +39,6 @@ public class RegisterActivity extends AppCompatActivity {
     private TextView goToLogin;
 
     private FirebaseAuth auth;
-    private FirebaseDatabase database;
-    private DatabaseReference rootReference, userReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,10 +52,6 @@ public class RegisterActivity extends AppCompatActivity {
         goToLogin = findViewById(R.id.login);
 
         auth = FirebaseAuth.getInstance();
-        database = FirebaseDatabase.getInstance();
-        rootReference = database.getReference();
-        rootReference.setValue("Users");
-        userReference = rootReference.child("Users");
 
         //go to Login Activity
         goToLogin.setOnClickListener(new View.OnClickListener() {
@@ -88,22 +83,11 @@ public class RegisterActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-
-                            User newUser = new User();
-                            Random rd = new Random();
-                            newUser.setId(String.valueOf(rd.nextInt(100)));
-                            newUser.setEmail(email);
-
-                            //push new user to data users on firebase database
-                            userReference.setValue(newUser);
-
                             Log.d(TAG, "createUserWithEmailPassword:success");
                             Toast.makeText(RegisterActivity.this, "Register successfully!", Toast.LENGTH_SHORT).show();
 
                             //go to Chat Activity
                             startActivity(new Intent(RegisterActivity.this, ListUserActivity.class));
-
-                            Toast.makeText(RegisterActivity.this, "go to chat", Toast.LENGTH_SHORT).show();
                         }
                         else {
                             Log.w(TAG, "createUserEmailPassword:failure", task.getException());
@@ -113,7 +97,6 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                 });
     }
-
 
     private boolean hasError(String email, String password, String password2) {
         Boolean hasError = false;

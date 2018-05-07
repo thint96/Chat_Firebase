@@ -19,6 +19,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
@@ -47,10 +49,23 @@ public class ListUserActivity extends AppCompatActivity {
         setContentView(R.layout.activity_list_user);
         setTitle("ListUserActivity");
 
+        users = new ArrayList<>();
+
+        database = FirebaseDatabase.getInstance();
+        rootReference = database.getReference();
+        userReference = rootReference.child("Users");
+        if (userReference == null) {
+            rootReference.setValue("Users");
+            userReference = rootReference.child("Users");
+        }
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
         lvUsers = findViewById(R.id.lvUsers);
 
+        //update database users if current user have already registered
+        updateNewUserToDatabase();
+
         //get all users from database to list "users"
-        users = new ArrayList<>();
         pushDataUsersToListUsers();
 
         adapter = new ListUserAdapter(ListUserActivity.this, users);
@@ -68,18 +83,17 @@ public class ListUserActivity extends AppCompatActivity {
 
     }
 
-    private void pushDataUsersToListUsers() {
-        database = FirebaseDatabase.getInstance();
-        rootReference = database.getReference();
-        userReference = rootReference.child("Users");
-        currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        newUser = new User();
+    private void updateNewUserToDatabase() {
+        User newUser = new User(currentUser.getUid().toString(), currentUser.getEmail().toString());
+        userReference.child(currentUser.getUid()).setValue(newUser);
+    }
 
+    private void pushDataUsersToListUsers() {
         userReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    //push data user to list users
+                    //push data user from database into list users
                     users.clear();
                     for (DataSnapshot data : dataSnapshot.getChildren()) {
                         User user = data.getValue(User.class);
