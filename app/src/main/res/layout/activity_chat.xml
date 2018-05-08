@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -8,9 +8,39 @@
     android:layout_gravity="center_horizontal"
     tools:context="fsi.studymyselft.nguyenthanhthi.chatapp.activities.ChatActivity">
 
-    <TextView
-        android:text="CHAT ACTIVITY"
+    <com.stfalcon.chatkit.messages.MessagesList
+        android:id="@+id/messagesList"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="match_parent"
+        android:layout_above="@+id/input"
+        app:incomingAvatarHeight="56dp"
+        app:incomingAvatarWidth="56dp"/>
 
-</android.support.constraint.ConstraintLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_above="@+id/input"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:background="#9f9e9e"/>
+
+    <com.stfalcon.chatkit.messages.MessageInput
+        android:id="@+id/input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        app:attachmentButtonBackground="?attr/selectableItemBackgroundBorderless"
+        app:attachmentButtonHeight="27dp"
+        app:attachmentButtonWidth="27dp"
+        app:inputButtonDefaultIconColor="@color/white"
+        app:inputButtonDefaultIconDisabledColor="@color/white60"
+        app:showAttachmentButton="true"/>
+        <!--app:attachmentButtonDefaultIconColor="@color/green"-->
+        <!--app:attachmentButtonDefaultIconPressedColor="@color/green_dark"-->
+
+        <!--app:inputButtonBackground="@drawable/bg_custom_layout_send"-->
+
+        <!--app:inputHint="@string/hint_enter_a_message"-->
+
+
+</RelativeLayout>
