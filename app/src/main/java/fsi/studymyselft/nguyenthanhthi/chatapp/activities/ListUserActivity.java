@@ -53,11 +53,8 @@ public class ListUserActivity extends AppCompatActivity {
 
         database = FirebaseDatabase.getInstance();
         rootReference = database.getReference();
+        if (rootReference.child("Users") == null) rootReference.setValue("Users");
         userReference = rootReference.child("Users");
-        if (userReference == null) {
-            rootReference.setValue("Users");
-            userReference = rootReference.child("Users");
-        }
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         lvUsers = findViewById(R.id.lvUsers);
@@ -84,7 +81,7 @@ public class ListUserActivity extends AppCompatActivity {
     }
 
     private void updateNewUserToDatabase() {
-        User newUser = new User(currentUser.getUid().toString(), currentUser.getEmail().toString());
+        User newUser = new User(currentUser.getUid().toString(), currentUser.getEmail().toString(), true);
         userReference.child(currentUser.getUid()).setValue(newUser);
     }
 
