@@ -1,90 +1,57 @@
 package fsi.studymyselft.nguyenthanhthi.chatapp.data;
 
-import com.stfalcon.chatkit.commons.models.IMessage;
-import com.stfalcon.chatkit.commons.models.MessageContentType;
-
-import java.util.Date;
-
 /**
  * Created by thanhthi on 07/05/2018.
  */
 
-public class Message implements IMessage, MessageContentType.Image {
+public class Message {
 
     private String id;
-    private String text;
-    private User user;
+    private String content;
+    private User userSend;
     private User userReceive;
-    private String imageUrl;
 
     public Message() {
     }
 
-    public Message(String id, String text, User user, User userReceive) {
+    public Message(String id, String content, User personSend, User userReceive) {
         this.id = id;
-        this.text = text;
-        this.user = user;
+        this.content = content;
+        this.userSend = personSend;
         this.userReceive = userReceive;
     }
 
-    public Message(String id, String text, User user, User userReceive, String imageUrl) {
-        this.id = id;
-        this.text = text;
-        this.user = user;
-        this.userReceive = userReceive;
-        this.imageUrl = imageUrl;
+    public String getId() {
+        return id;
     }
 
     public void setId(String id) {
         this.id = id;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public String getContent() {
+        return content;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setContent(String content) {
+        this.content = content;
     }
 
-    public void setUserReceive(User userReceive) {
-        this.userReceive = userReceive;
+    public User getUserSend() {
+        return userSend;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    @Override
-    public String getId() {
-        return this.id;
-    }
-
-    @Override
-    public String getText() {
-        return this.text;
-    }
-
-    @Override
-    public User getUser() {
-        return user;
-    }
-
-    @Override
-    public Date getCreatedAt() {
-        return null;
-    }
-
-    @Override
-    public String getImageUrl() {
-        return imageUrl;
+    public void setUserSend(User userSend) {
+        this.userSend = userSend;
     }
 
     public User getUserReceive() {
         return userReceive;
     }
 
-    public String getStatus() {
-        return "Sent";
+    public void setUserReceive(User userSend) {
+        this.userSend = userSend;
     }
+
+
 }

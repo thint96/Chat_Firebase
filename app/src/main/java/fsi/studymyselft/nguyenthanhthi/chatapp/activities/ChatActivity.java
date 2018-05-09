@@ -22,8 +22,8 @@ import java.util.Calendar;
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.Message;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.User;
-import fsi.studymyselft.nguyenthanhthi.chatapp.holders.CustomIncomingTextMessageViewHolder;
-import fsi.studymyselft.nguyenthanhthi.chatapp.holders.CustomOutcomingTextMessageViewHolder;
+//import fsi.studymyselft.nguyenthanhthi.chatapp.holders.CustomIncomingTextMessageViewHolder;
+//import fsi.studymyselft.nguyenthanhthi.chatapp.holders.CustomOutcomingTextMessageViewHolder;
 
 public class ChatActivity extends AppCompatActivity
         implements MessageInput.InputListener {
@@ -33,7 +33,7 @@ public class ChatActivity extends AppCompatActivity
 
     private Message newMessage;
     private ArrayList<Message> messages;
-    private MessagesListAdapter<Message> messagesAdapter;
+//    private MessagesListAdapter<Message> messagesAdapter;
 
     private FirebaseDatabase database;
     private DatabaseReference rootReference, messagesReference;
@@ -58,7 +58,6 @@ public class ChatActivity extends AppCompatActivity
         }
         messagesReference = rootReference.child("Messages");
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
-
         userSend = new User(currentUser.getUid(), currentUser.getEmail());
 
         //get information of user receive message
@@ -66,12 +65,12 @@ public class ChatActivity extends AppCompatActivity
         String userReceiveEmail = getIntent().getStringExtra("EMAIL");
         userReceive = new User(userReceiveId, userReceiveEmail);
 
-        initMessageAdapter();
+//        initMessageAdapter();
 
         //get all messages from database to list "Messages"
         pushDataMessagesToListMessages();
 
-        messagesList.setAdapter(messagesAdapter);
+//        messagesList.setAdapter(messagesAdapter);
 
         //validate and send message
         messageInput.setInputListener(this);
@@ -84,11 +83,13 @@ public class ChatActivity extends AppCompatActivity
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     messages.clear();
+                    int i = 0;
                     for (DataSnapshot data : dataSnapshot.getChildren()) {
                         Message message = data.getValue(Message.class);
                         messages.add(message);
 
-                        messagesAdapter.addToStart(message, true);
+                        Toast.makeText(ChatActivity.this, ++i + "" + message.getContent(), Toast.LENGTH_SHORT).show();
+//                        messagesAdapter.addToStart(message, true);
                     }
                 }
             }
@@ -100,17 +101,17 @@ public class ChatActivity extends AppCompatActivity
         });
     }
 
-    private void initMessageAdapter() {
-        MessageHolders messageHolders = new MessageHolders()
-                .setIncomingTextConfig(
-                        CustomIncomingTextMessageViewHolder.class,
-                        R.layout.item_custom_incoming_text_message)
-                .setOutcomingTextConfig(
-                        CustomOutcomingTextMessageViewHolder.class,
-                        R.layout.item_custom_outcoming_text_message);
+//    private void initMessageAdapter() {
+//        MessageHolders messageHolders = new MessageHolders()
+//                .setIncomingTextConfig(
+//                        CustomIncomingTextMessageViewHolder.class,
+//                        R.layout.item_custom_incoming_text_message)
+//                .setOutcomingTextConfig(
+//                        CustomOutcomingTextMessageViewHolder.class,
+//                        R.layout.item_custom_outcoming_text_message);
 
-        messagesAdapter = new MessagesListAdapter<Message>(currentUser.getUid(), messageHolders, null);
-    }
+//        messagesAdapter = new MessagesListAdapter<Message>(currentUser.getUid(), messageHolders, null);
+//    }
 
     @Override
     public boolean onSubmit(CharSequence input) {
@@ -125,7 +126,7 @@ public class ChatActivity extends AppCompatActivity
         newMessage = new Message(key, messageText, userSend, userReceive);
         messagesReference.child(key).setValue(newMessage);
 
-        messagesAdapter.addToStart(newMessage, true);
+//        messagesAdapter.addToStart(newMessage, true);
         return true;
     }
 
