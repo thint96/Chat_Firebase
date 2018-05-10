@@ -2,6 +2,7 @@ package fsi.studymyselft.nguyenthanhthi.chatapp.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -11,6 +12,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.stfalcon.chatkit.commons.ImageLoader;
 import com.stfalcon.chatkit.messages.MessageHolders;
 import com.stfalcon.chatkit.messages.MessageInput;
 import com.stfalcon.chatkit.messages.MessagesList;
@@ -22,8 +24,8 @@ import java.util.Calendar;
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.Message;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.User;
-//import fsi.studymyselft.nguyenthanhthi.chatapp.holders.CustomIncomingTextMessageViewHolder;
-//import fsi.studymyselft.nguyenthanhthi.chatapp.holders.CustomOutcomingTextMessageViewHolder;
+import fsi.studymyselft.nguyenthanhthi.chatapp.holders.CustomIncomingTextMessageViewHolder;
+import fsi.studymyselft.nguyenthanhthi.chatapp.holders.CustomOutcomingTextMessageViewHolder;
 
 public class ChatActivity extends AppCompatActivity
         implements MessageInput.InputListener {
@@ -33,10 +35,10 @@ public class ChatActivity extends AppCompatActivity
 
     private Message newMessage;
     private ArrayList<Message> messages;
-//    private MessagesListAdapter<Message> messagesAdapter;
+    private MessagesListAdapter<Message> messagesAdapter;
 
     private FirebaseDatabase database;
-    private DatabaseReference rootReference, messagesReference;
+    private DatabaseReference rootReference, messagesReference, messagesUserReceiveReference;
     private FirebaseUser currentUser;
 
     private User userSend, userReceive;
@@ -65,20 +67,23 @@ public class ChatActivity extends AppCompatActivity
         String userReceiveEmail = getIntent().getStringExtra("EMAIL");
         userReceive = new User(userReceiveId, userReceiveEmail);
 
-//        initMessageAdapter();
+        if (messagesReference.child(userReceiveId) == null) {
+            messagesReference.setValue(userReceiveId);
+        }
+        messagesUserReceiveReference = messagesReference.child(userReceiveId);
 
-        //get all messages from database to list "Messages"
-        pushDataMessagesToListMessages();
-
-//        messagesList.setAdapter(messagesAdapter);
+        initMessageAdapter();
 
         //validate and send message
         messageInput.setInputListener(this);
 
+        //get all messages from database to list "Messages"
+        pushDataMessagesToListMessages();
+
     }
 
     private void pushDataMessagesToListMessages() {
-        messagesReference.addValueEventListener(new ValueEventListener() {
+        messagesUserReceiveReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -88,10 +93,12 @@ public class ChatActivity extends AppCompatActivity
                         Message message = data.getValue(Message.class);
                         messages.add(message);
 
-                        Toast.makeText(ChatActivity.this, ++i + "" + message.getContent(), Toast.LENGTH_SHORT).show();
-//                        messagesAdapter.addToStart(message, true);
+//                        Toast.makeText(ChatActivity.this, ++i + "" + message.getContent(), Toast.LENGTH_SHORT).show();
+                        messagesAdapter.addToStart(message, true);
                     }
                 }
+
+                messagesList.setAdapter(messagesAdapter);
             }
 
             @Override
@@ -101,32 +108,30 @@ public class ChatActivity extends AppCompatActivity
         });
     }
 
-//    private void initMessageAdapter() {
-//        MessageHolders messageHolders = new MessageHolders()
-//                .setIncomingTextConfig(
-//                        CustomIncomingTextMessageViewHolder.class,
-//                        R.layout.item_custom_incoming_text_message)
-//                .setOutcomingTextConfig(
-//                        CustomOutcomingTextMessageViewHolder.class,
-//                        R.layout.item_custom_outcoming_text_message);
+    private void initMessageAdapter() {
+        MessageHolders messageHolders = new MessageHolders()
+                .setIncomingTextConfig(
+                        CustomIncomingTextMessageViewHolder.class,
+                        R.layout.item_custom_incoming_text_message)
+                .setOutcomingTextConfig(
+                        CustomOutcomingTextMessageViewHolder.class,
+                        R.layout.item_custom_outcoming_text_message);
 
-//        messagesAdapter = new MessagesListAdapter<Message>(currentUser.getUid(), messageHolders, null);
-//    }
+        messagesAdapter = new MessagesListAdapter<Message>(currentUser.getUid(), messageHolders, null);
+    }
 
     @Override
     public boolean onSubmit(CharSequence input) {
         String messageText = String.valueOf(input);
-        if (messagesReference == null || messageText.isEmpty() || messageText.equals("")) {
+        if (messagesUserReceiveReference == null || messageText.isEmpty() || messageText.equals("")) {
             Toast.makeText(this, "udate new message to database fail", Toast.LENGTH_SHORT).show();
             return false;
         }
 
         //push new message to database
-        String key = messagesReference.push().getKey();
-        newMessage = new Message(key, messageText, userSend, userReceive);
-        messagesReference.child(key).setValue(newMessage);
-
-//        messagesAdapter.addToStart(newMessage, true);
+        String key = messagesUserReceiveReference.push().getKey();
+        newMessage = new Message(key, messageText, userSend);
+        messagesUserReceiveReference.child(key).setValue(newMessage);
         return true;
     }
 

@@ -1,57 +1,46 @@
 package fsi.studymyselft.nguyenthanhthi.chatapp.data;
 
+import com.stfalcon.chatkit.commons.models.IMessage;
+import com.stfalcon.chatkit.commons.models.IUser;
+
+import java.util.Date;
+
 /**
  * Created by thanhthi on 07/05/2018.
  */
 
-public class Message {
+public class Message implements IMessage {
 
     private String id;
-    private String content;
-    private User userSend;
-    private User userReceive;
+    private String text;
+    private User user; //user send
 
     public Message() {
     }
 
-    public Message(String id, String content, User personSend, User userReceive) {
+    public Message(String id, String text, User user) {
         this.id = id;
-        this.content = content;
-        this.userSend = personSend;
-        this.userReceive = userReceive;
+        this.text = text;
+        this.user = user;
     }
 
     public String getId() {
-        return id;
+        return this.id;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    @Override
+    public String getText() {
+        return this.text;
     }
 
-    public String getContent() {
-        return content;
+    @Override
+    public IUser getUser() {
+        return this.user;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    @Override
+    public Date getCreatedAt() {
+        return null;
     }
-
-    public User getUserSend() {
-        return userSend;
-    }
-
-    public void setUserSend(User userSend) {
-        this.userSend = userSend;
-    }
-
-    public User getUserReceive() {
-        return userReceive;
-    }
-
-    public void setUserReceive(User userSend) {
-        this.userSend = userSend;
-    }
-
 
 }

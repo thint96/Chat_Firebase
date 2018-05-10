@@ -94,9 +94,9 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if (authStateListener != null) {
+//        if (authStateListener != null) {
 //            auth.removeAuthStateListener(authStateListener);
-        }
+//        }
     }
 
     private void loginWithEmailPassword(String email, String password) {

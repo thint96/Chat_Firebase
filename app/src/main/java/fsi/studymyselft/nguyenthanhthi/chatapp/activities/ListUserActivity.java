@@ -94,8 +94,10 @@ public class ListUserActivity extends AppCompatActivity {
                     users.clear();
                     for (DataSnapshot data : dataSnapshot.getChildren()) {
                         User user = data.getValue(User.class);
-                        users.add(user);
-                        adapter.notifyDataSetChanged();
+                        if (user.getId() != currentUser.getUid()) { //not set current user chat with yourself
+                            users.add(user);
+                            adapter.notifyDataSetChanged();
+                        }
                     }
                 }
             }
