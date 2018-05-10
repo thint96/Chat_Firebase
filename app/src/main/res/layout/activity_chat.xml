@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="center_horizontal"
+    android:background="@color/white"
     tools:context="fsi.studymyselft.nguyenthanhthi.chatapp.activities.ChatActivity">
 
     <com.stfalcon.chatkit.messages.MessagesList
@@ -14,7 +14,10 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/input"
         app:incomingAvatarHeight="56dp"
-        app:incomingAvatarWidth="56dp"/>
+        app:incomingAvatarWidth="56dp"
+        app:incomingBubbleDrawable="@drawable/bg_custom_incoming_message"
+        app:outcomingBubbleDrawable="@drawable/bg_custom_outcoming_message"
+        app:outcomingTimeTextColor="@color/gray_dark_transparent"/>
 
     <View
         android:layout_width="match_parent"
@@ -22,7 +25,7 @@
         android:layout_above="@+id/input"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:background="#9f9e9e"/>
+        android:background="@color/gray_light"/>
 
     <com.stfalcon.chatkit.messages.MessageInput
         android:id="@+id/input"
@@ -30,17 +33,14 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         app:attachmentButtonBackground="?attr/selectableItemBackgroundBorderless"
+        app:attachmentButtonDefaultIconColor="@color/green"
+        app:attachmentButtonDefaultIconPressedColor="@color/green_dark"
         app:attachmentButtonHeight="27dp"
         app:attachmentButtonWidth="27dp"
+        app:inputButtonBackground="@drawable/bg_custom_layout_send"
         app:inputButtonDefaultIconColor="@color/white"
         app:inputButtonDefaultIconDisabledColor="@color/white60"
+        app:inputHint="@string/hint_enter_a_message"
         app:showAttachmentButton="true"/>
-        <!--app:attachmentButtonDefaultIconColor="@color/green"-->
-        <!--app:attachmentButtonDefaultIconPressedColor="@color/green_dark"-->
-
-        <!--app:inputButtonBackground="@drawable/bg_custom_layout_send"-->
-
-        <!--app:inputHint="@string/hint_enter_a_message"-->
-
 
 </RelativeLayout>

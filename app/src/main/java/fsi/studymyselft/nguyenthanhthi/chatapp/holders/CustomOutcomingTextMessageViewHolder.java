@@ -20,6 +20,6 @@ public class CustomOutcomingTextMessageViewHolder extends MessageHolders.Outcomi
     public void onBind(Message message) {
         super.onBind(message);
 
-        time.setText(message.getStatus() + " " + time.getText());
+        time.setText("Sent " + time.getText());
     }
 }
