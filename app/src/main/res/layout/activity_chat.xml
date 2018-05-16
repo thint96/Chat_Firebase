@@ -13,10 +13,24 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/input"
-        app:incomingAvatarHeight="56dp"
-        app:incomingAvatarWidth="56dp"
-        app:textAutoLink="all"
-        app:outcomingTimeTextColor="@color/gray_dark_transparent"/>
+        app:dateHeaderFormat="dd MMMM yyyy"
+        app:incomingDefaultBubbleColor="@color/ivory"
+        app:incomingDefaultBubblePressedColor="@color/ivory_dark"
+        app:incomingDefaultBubbleSelectedColor="@color/gray"
+        app:incomingDefaultImageOverlayPressedColor="@color/black_10"
+        app:incomingDefaultImageOverlaySelectedColor="@color/gray_transparent"
+        app:incomingTextColor="@color/black"
+        app:incomingTextLinkColor="@color/blue"
+        app:incomingTextSize="18sp"
+        app:outcomingDefaultBubbleColor="@color/green"
+        app:outcomingDefaultBubblePressedColor="@color/green_dark"
+        app:outcomingDefaultBubbleSelectedColor="@color/gray_dark_transparent"
+        app:outcomingDefaultImageOverlayPressedColor="@color/black_10"
+        app:outcomingDefaultImageOverlaySelectedColor="@color/gray_transparent"
+        app:outcomingTextColor="@color/white"
+        app:outcomingTextLinkColor="@color/white"
+        app:outcomingTextSize="18sp"
+        app:textAutoLink="all"/>
 
     <View
         android:layout_width="match_parent"
@@ -39,6 +53,7 @@
         app:inputButtonBackground="@drawable/bg_custom_layout_send"
         app:inputButtonDefaultIconColor="@color/white"
         app:inputButtonDefaultIconDisabledColor="@color/white60"
+        app:inputCursorDrawable="@drawable/shape_custom_cursor"
         app:inputHint="@string/hint_enter_a_message"
         app:showAttachmentButton="true"/>
 
