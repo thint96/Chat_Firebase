@@ -24,8 +24,8 @@ public class CustomIncomingTextMessageViewHolder extends MessageHolders.Incoming
     public void onBind(Message message) {
         super.onBind(message);
 
-//        boolean isOnline = message.getUser().isOnline();
-        boolean isOnline = false;
+//        boolean isOnline = message.getUser();
+        boolean isOnline = true;
         if (isOnline) {
             onlineIndicator.setBackgroundResource(R.drawable.shape_bubble_online);
         }

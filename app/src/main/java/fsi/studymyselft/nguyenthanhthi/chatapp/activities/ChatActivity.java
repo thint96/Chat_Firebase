@@ -67,6 +67,8 @@ public class ChatActivity extends AppCompatActivity
         String userReceiveEmail = getIntent().getStringExtra("EMAIL");
         userReceive = new User(userReceiveId, userReceiveEmail);
 
+        getSupportActionBar().setTitle(userReceiveEmail);
+
         if (messagesReference.child(userReceiveId) == null) {
             messagesReference.setValue(userReceiveId);
         }
@@ -87,6 +89,7 @@ public class ChatActivity extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
+                    messagesAdapter.delete(messages);
                     messages.clear();
                     int i = 0;
                     for (DataSnapshot data : dataSnapshot.getChildren()) {

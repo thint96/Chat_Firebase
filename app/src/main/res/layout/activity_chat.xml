@@ -15,8 +15,7 @@
         android:layout_above="@+id/input"
         app:incomingAvatarHeight="56dp"
         app:incomingAvatarWidth="56dp"
-        app:incomingBubbleDrawable="@drawable/bg_custom_incoming_message"
-        app:outcomingBubbleDrawable="@drawable/bg_custom_outcoming_message"
+        app:textAutoLink="all"
         app:outcomingTimeTextColor="@color/gray_dark_transparent"/>
 
     <View

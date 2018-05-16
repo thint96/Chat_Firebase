@@ -27,6 +27,7 @@ public class User implements IUser {
     public User(String id, String email) {
         this.id = id;
         this.email = email;
+        this.online = true;
     }
 
     public User(String id, String email, boolean online) {
