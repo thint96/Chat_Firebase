@@ -34,7 +34,7 @@
         android:layout_marginRight="30dp"
         android:layout_toEndOf="@id/messageUserAvatar"
         android:layout_toRightOf="@id/messageUserAvatar"
-        android:orientation="vertical">
+        android:orientation="horizontal">
 
         <TextView
             android:id="@id/messageText"
