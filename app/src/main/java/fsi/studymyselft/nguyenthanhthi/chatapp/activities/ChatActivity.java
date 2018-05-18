@@ -30,8 +30,8 @@ import fsi.studymyselft.nguyenthanhthi.chatapp.holders.CustomOutcomingTextMessag
 public class ChatActivity extends AppCompatActivity
         implements MessageInput.InputListener {
 
-    private MessagesList messagesList; //UI
-    private MessageInput messageInput;
+    private MessagesList messagesList; //UI - widget
+    private MessageInput messageInput; //UI - widget
 
     private String userSendRef, userReceiveRef;
 
@@ -43,7 +43,7 @@ public class ChatActivity extends AppCompatActivity
     private DatabaseReference rootReference, messagesReference, messagesUserReceiveReference, messagesUserSendReference;
     private FirebaseUser currentUser; // <=> userSend
 
-    private User userSend, userReceive;
+    private User myUser, otherUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,12 +63,12 @@ public class ChatActivity extends AppCompatActivity
         }
         messagesReference = rootReference.child("Messages");
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        userSend = new User(currentUser.getUid(), currentUser.getEmail());
+        myUser = new User(currentUser.getUid(), currentUser.getEmail());
 
         //get information of user receive message
         String userReceiveId = getIntent().getStringExtra("ID").toString();
         String userReceiveEmail = getIntent().getStringExtra("EMAIL").toString();
-        userReceive = new User(userReceiveId, userReceiveEmail);
+        otherUser = new User(userReceiveId, userReceiveEmail);
 
         getSupportActionBar().setTitle(userReceiveEmail);
 
@@ -82,95 +82,95 @@ public class ChatActivity extends AppCompatActivity
         messagesUserReceiveReference = messagesReference.child(userReceiveRef);
 
         //with messages of User Send
-        indexEnd = userSend.getEmail().indexOf("@");
-        String userSendRef = userSend.getEmail().substring(0, indexEnd);
+        indexEnd = myUser.getEmail().indexOf("@");
+        String userSendRef = myUser.getEmail().substring(0, indexEnd);
         if (messagesReference.child(userSendRef) == null) {
             messagesReference.setValue(userSendRef);
         }
         messagesUserSendReference = messagesReference.child(userSendRef);
 
-        initMessageAdapter();
+//        initMessageAdapter();
 
         //validate and send message
         messageInput.setInputListener(this);
 
         //get all messages from database to list "Messages"
-        pushDataMessagesToListMessages();
+//        pushDataMessagesToListMessages();
 
     }
 
-    private void pushDataMessagesToListMessages() {
-        messagesUserSendReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    messagesUserReceive.clear();
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        Message message = snapshot.getValue(Message.class);
-                        if (message.getUser().getName() == userSendRef) {
-                            messagesUserReceive.add(message);
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        messagesUserReceiveReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    messagesAdapter.delete(messagesUserSend);
-                    messagesUserSend.clear();
-                    int i = 0;
-                    for (DataSnapshot data : dataSnapshot.getChildren()) {
-                        Message message = data.getValue(Message.class);
-                        messagesUserSend.add(message);
-
-                        Toast.makeText(ChatActivity.this, ++i + " - " + message.getText(), Toast.LENGTH_SHORT).show();
-                        messagesAdapter.addToStart(message, true);
-                    }
-                }
-
-                messagesList.setAdapter(messagesAdapter);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-    }
-
-    private void initMessageAdapter() {
-        MessageHolders messageHolders = new MessageHolders()
-                .setIncomingTextConfig(
-                        CustomIncomingTextMessageViewHolder.class,
-                        R.layout.item_custom_incoming_text_message)
-                .setOutcomingTextConfig(
-                        CustomOutcomingTextMessageViewHolder.class,
-                        R.layout.item_custom_outcoming_text_message);
-
-        messagesAdapter = new MessagesListAdapter<Message>(currentUser.getUid(), messageHolders, null);
-    }
-
+//    private void pushDataMessagesToListMessages() {
+//        messagesUserSendReference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                if (dataSnapshot.exists()) {
+//                    messagesUserReceive.clear();
+//                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                        Message message = snapshot.getValue(Message.class);
+//                        if (message.getUser().getName() == userSendRef) {
+//                            messagesUserReceive.add(message);
+//                        }
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+//
+//        messagesUserReceiveReference.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                if (dataSnapshot.exists()) {
+//                    messagesAdapter.delete(messagesUserSend);
+//                    messagesUserSend.clear();
+//                    int i = 0;
+//                    for (DataSnapshot data : dataSnapshot.getChildren()) {
+//                        Message message = data.getValue(Message.class);
+//                        messagesUserSend.add(message);
+//
+//                        Toast.makeText(ChatActivity.this, ++i + " - " + message.getText(), Toast.LENGTH_SHORT).show();
+//                        messagesAdapter.addToStart(message, true);
+//                    }
+//                }
+//
+//                messagesList.setAdapter(messagesAdapter);
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+//
+//    }
+//
+//    private void initMessageAdapter() {
+//        MessageHolders messageHolders = new MessageHolders()
+//                .setIncomingTextConfig(
+//                        CustomIncomingTextMessageViewHolder.class,
+//                        R.layout.item_custom_incoming_text_message)
+//                .setOutcomingTextConfig(
+//                        CustomOutcomingTextMessageViewHolder.class,
+//                        R.layout.item_custom_outcoming_text_message);
+//
+//        messagesAdapter = new MessagesListAdapter<Message>(currentUser.getUid(), messageHolders, null);
+//    }
+//
     @Override
     public boolean onSubmit(CharSequence input) {
-        String messageText = String.valueOf(input);
-        if (messagesUserReceiveReference == null || messageText.isEmpty() || messageText.equals("")) {
-            Toast.makeText(this, "udate new message to database fail", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-
-        //push new message to database
-        String key = messagesUserReceiveReference.push().getKey();
-        newMessage = new Message(key, messageText, userSend);
-        messagesUserReceiveReference.child(key).setValue(newMessage);
+//        String messageText = String.valueOf(input);
+//        if (messagesUserReceiveReference == null || messageText.isEmpty() || messageText.equals("")) {
+//            Toast.makeText(this, "udate new message to database fail", Toast.LENGTH_SHORT).show();
+//            return false;
+//        }
+//
+//        //push new message to database
+//        String key = messagesUserReceiveReference.push().getKey();
+//        newMessage = new Message(key, messageText, userSend);
+//        messagesUserReceiveReference.child(key).setValue(newMessage);
         return true;
     }
 
