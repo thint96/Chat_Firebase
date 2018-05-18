@@ -33,13 +33,15 @@ public class ChatActivity extends AppCompatActivity
     private MessagesList messagesList; //UI
     private MessageInput messageInput;
 
+    private String userSendRef, userReceiveRef;
+
     private Message newMessage;
-    private ArrayList<Message> messages;
+    private ArrayList<Message> messagesUserSend, messagesUserReceive, messages;
     private MessagesListAdapter<Message> messagesAdapter;
 
     private FirebaseDatabase database;
-    private DatabaseReference rootReference, messagesReference, messagesUserReceiveReference;
-    private FirebaseUser currentUser;
+    private DatabaseReference rootReference, messagesReference, messagesUserReceiveReference, messagesUserSendReference;
+    private FirebaseUser currentUser; // <=> userSend
 
     private User userSend, userReceive;
 
@@ -51,7 +53,8 @@ public class ChatActivity extends AppCompatActivity
         messagesList = findViewById(R.id.messagesList);
         messageInput = findViewById(R.id.input);
 
-        messages = new ArrayList<>();
+        messagesUserSend = new ArrayList<>();
+        messagesUserReceive = new ArrayList<>();
 
         database = FirebaseDatabase.getInstance();
         rootReference = database.getReference();
@@ -63,16 +66,28 @@ public class ChatActivity extends AppCompatActivity
         userSend = new User(currentUser.getUid(), currentUser.getEmail());
 
         //get information of user receive message
-        String userReceiveId = getIntent().getStringExtra("ID");
-        String userReceiveEmail = getIntent().getStringExtra("EMAIL");
+        String userReceiveId = getIntent().getStringExtra("ID").toString();
+        String userReceiveEmail = getIntent().getStringExtra("EMAIL").toString();
         userReceive = new User(userReceiveId, userReceiveEmail);
 
         getSupportActionBar().setTitle(userReceiveEmail);
 
-        if (messagesReference.child(userReceiveId) == null) {
-            messagesReference.setValue(userReceiveId);
+        //set child node of "Messages" node is email and cut tail "@..."
+        //with messages of User Receive
+        int indexEnd = userReceiveEmail.indexOf("@");
+        userReceiveRef = userReceiveEmail.substring(0, indexEnd);
+        if (messagesReference.child(userReceiveRef) == null) {
+            messagesReference.setValue(userReceiveRef);
         }
-        messagesUserReceiveReference = messagesReference.child(userReceiveId);
+        messagesUserReceiveReference = messagesReference.child(userReceiveRef);
+
+        //with messages of User Send
+        indexEnd = userSend.getEmail().indexOf("@");
+        String userSendRef = userSend.getEmail().substring(0, indexEnd);
+        if (messagesReference.child(userSendRef) == null) {
+            messagesReference.setValue(userSendRef);
+        }
+        messagesUserSendReference = messagesReference.child(userSendRef);
 
         initMessageAdapter();
 
@@ -85,18 +100,38 @@ public class ChatActivity extends AppCompatActivity
     }
 
     private void pushDataMessagesToListMessages() {
+        messagesUserSendReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    messagesUserReceive.clear();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        Message message = snapshot.getValue(Message.class);
+                        if (message.getUser().getName() == userSendRef) {
+                            messagesUserReceive.add(message);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
         messagesUserReceiveReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    messagesAdapter.delete(messages);
-                    messages.clear();
+                    messagesAdapter.delete(messagesUserSend);
+                    messagesUserSend.clear();
                     int i = 0;
                     for (DataSnapshot data : dataSnapshot.getChildren()) {
                         Message message = data.getValue(Message.class);
-                        messages.add(message);
+                        messagesUserSend.add(message);
 
-//                        Toast.makeText(ChatActivity.this, ++i + "" + message.getContent(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ChatActivity.this, ++i + " - " + message.getText(), Toast.LENGTH_SHORT).show();
                         messagesAdapter.addToStart(message, true);
                     }
                 }
@@ -109,6 +144,7 @@ public class ChatActivity extends AppCompatActivity
 
             }
         });
+
     }
 
     private void initMessageAdapter() {
