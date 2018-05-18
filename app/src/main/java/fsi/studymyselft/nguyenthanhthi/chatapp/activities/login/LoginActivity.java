@@ -1,5 +1,6 @@
-package fsi.studymyselft.nguyenthanhthi.chatapp.activities;
+package fsi.studymyselft.nguyenthanhthi.chatapp.activities.login;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -27,6 +28,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
+import fsi.studymyselft.nguyenthanhthi.chatapp.activities.ListUserActivity;
+import fsi.studymyselft.nguyenthanhthi.chatapp.activities.RegisterActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.User;
 
 public class LoginActivity extends AppCompatActivity {
@@ -34,6 +37,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText edtEmail, edtPassword;
     private Button buttonLogin;
     private TextView goToRegister;
+    private ProgressDialog progressDialog;
 
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener authStateListener;
@@ -44,6 +48,7 @@ public class LoginActivity extends AppCompatActivity {
     private ArrayList<User> userList;
 
     private final String TAG = "LoginActivity";
+    private final int totalProgressTime = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,58 +79,78 @@ public class LoginActivity extends AppCompatActivity {
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //input email and password of user
-                String inputEmail = edtEmail.getText().toString().trim();
-                String inputPass = edtPassword.getText().toString().trim();
-
-                //automatic login - set default email and password
-                if (inputEmail.isEmpty() && inputPass.isEmpty()) {
-                    //check database
-                    if (usersReference == null) {
-                        Toast.makeText(LoginActivity.this, "Database Users have not created!", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    //push data users to userList
-                    pushDataUsersToList();
-                    int total = userList.size(); //total user records in database Users
-
-                    //check total users in database
-                    if (total == 0) {
-//                        Toast.makeText(LoginActivity.this, "Do not have data users in database!", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    Random rd = new Random(total);
-                    int index = rd.nextInt(total);
-                    User user = userList.get(index);
-                    inputEmail = user.getEmail();
-                    inputPass = "123456";
-                }
-
-                if (!hasError(inputEmail, inputPass)) {
-                    loginWithEmailPassword(inputEmail, inputPass);
-                }
+                showProgressBar();
             }
         });
 
-        //check user have login but don't logout
-        //if true then user must'n login
-//        authStateListener = new FirebaseAuth.AuthStateListener() {
-//            @Override
-//            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-//                FirebaseUser userSignedIn = firebaseAuth.getCurrentUser();
-//                if (userSignedIn != null) {
-//                    //user have login but don't logout
-//                    Log.d(TAG, "onAuthStateChanged:signed_in:" + userSignedIn.getUid());
-//                    startActivity(new Intent(LoginActivity.this, ListUserActivity.class));
-//                    finish();
-//                }
-//                else {
-//                    Log.d(TAG, "onAuthStateChanged:sign_out");
-//                }
-//            }
-//        };
+    }
+
+    private void showProgressBar() {
+        progressDialog = new ProgressDialog(LoginActivity.this);
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setProgress(0);
+        progressDialog.show();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                progressDialog.show();
+                int jumpTime = 0;
+
+                loginWithEmailPassword();
+
+                while(jumpTime < totalProgressTime) {
+                    try {
+                        Thread.sleep(500);
+                        jumpTime += 20;
+                        progressDialog.setProgress(jumpTime);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+
+                progressDialog.dismiss();
+            }
+        }).start();
+    }
+
+    private void loginWithEmailPassword() {
+        //input email and password of user
+        String inputEmail = edtEmail.getText().toString().trim();
+        String inputPass = edtPassword.getText().toString().trim();
+
+        //automatic login - set default email and password
+        if (inputEmail.isEmpty() && inputPass.isEmpty()) {
+            //check database
+            if (usersReference == null) {
+                Toast.makeText(LoginActivity.this, "Database Users have not created!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            //push data users to userList
+            pushDataUsersToList();
+            int total = userList.size(); //total user records in database Users
+
+            //check total users in database
+            if (total == 0) {
+//                        Toast.makeText(LoginActivity.this, "Do not have data users in database!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Random rd = new Random(total);
+            int index = rd.nextInt(total);
+            User user = userList.get(index);
+            inputEmail = user.getEmail();
+            inputPass = "123456";
+        }
+
+        if (!hasError(inputEmail, inputPass)) {
+            loginWithEmailPassword(inputEmail, inputPass);
+        }
+
     }
 
     private void pushDataUsersToList() {
@@ -148,21 +173,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-//        auth.addAuthStateListener(authStateListener);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-//        if (authStateListener != null) {
-//            auth.removeAuthStateListener(authStateListener);
-//        }
-    }
-
-    private void loginWithEmailPassword(final String email, String password) {
+    private void loginWithEmailPassword(final String email, final String password) {
         auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -176,11 +187,13 @@ public class LoginActivity extends AppCompatActivity {
 
                             //go to List Users Activity
                             startActivity(new Intent(LoginActivity.this, ListUserActivity.class));
+
                         }
                         else {
                             Log.w(TAG, "signInWithEmailPassword:failure", task.getException());
                             Toast.makeText(LoginActivity.this, R.string.login_failed,
                                     Toast.LENGTH_SHORT).show();
+                            finish();
                         }
                     }
                 });
@@ -207,5 +220,7 @@ public class LoginActivity extends AppCompatActivity {
 
         return hasError;
     }
+
+
 
 }

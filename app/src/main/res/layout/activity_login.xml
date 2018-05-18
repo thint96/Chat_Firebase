@@ -7,17 +7,17 @@
     android:layout_margin="18dp"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context="fsi.studymyselft.nguyenthanhthi.chatapp.activities.LoginActivity">
+    tools:context="fsi.studymyselft.nguyenthanhthi.chatapp.activities.login.LoginActivity">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
         android:gravity="center"
-        android:textStyle="bold"
         android:text="Login"
         android:textColor="@color/colorPrimaryDark"
-        android:textSize="30dp"/>
+        android:textSize="30dp"
+        android:textStyle="bold"/>
 
     <EditText
         android:id="@+id/edt_email"
@@ -51,5 +51,12 @@
         android:gravity="center"
         android:text="Click here to register"
         android:textSize="20dp"/>
+
+    <ProgressBar
+        android:visibility="gone"
+        android:id="@+id/progressBar"
+        style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Large"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
 </LinearLayout>
