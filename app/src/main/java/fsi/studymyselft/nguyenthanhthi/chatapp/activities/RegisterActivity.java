@@ -18,6 +18,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
+import fsi.studymyselft.nguyenthanhthi.chatapp.activities.login.LoginActivity;
 
 public class RegisterActivity extends AppCompatActivity {
 
