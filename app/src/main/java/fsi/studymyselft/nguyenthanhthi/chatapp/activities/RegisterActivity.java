@@ -18,7 +18,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
-import fsi.studymyselft.nguyenthanhthi.chatapp.activities.login.LoginActivity;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -39,7 +38,7 @@ public class RegisterActivity extends AppCompatActivity {
         edtPassword = (EditText) findViewById(R.id.edt_password);
         edtPassword2 = (EditText) findViewById(R.id.edt_password_again);
         buttonRegister = (Button) findViewById(R.id.btn_register);
-        goToLogin = (TextView) findViewById(R.id.login);
+        goToLogin = (TextView) findViewById(R.id.goToLogin);
 
         auth = FirebaseAuth.getInstance();
 

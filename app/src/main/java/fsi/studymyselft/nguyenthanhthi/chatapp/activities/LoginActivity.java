@@ -53,7 +53,7 @@ public class LoginActivity extends AppCompatActivity {
         edtEmail = (EditText) findViewById(R.id.edt_email);
         edtPassword = (EditText) findViewById(R.id.edt_password);
         buttonLogin = (Button) findViewById(R.id.btn_login);
-        goToRegister = (TextView) findViewById(R.id.register);
+        goToRegister = (TextView) findViewById(R.id.goToRegister);
 
         userList = new ArrayList<>();
 
