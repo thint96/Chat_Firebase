@@ -2,7 +2,6 @@ package fsi.studymyselft.nguyenthanhthi.chatapp.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -12,96 +11,157 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.stfalcon.chatkit.commons.ImageLoader;
 import com.stfalcon.chatkit.messages.MessageHolders;
 import com.stfalcon.chatkit.messages.MessageInput;
 import com.stfalcon.chatkit.messages.MessagesList;
 import com.stfalcon.chatkit.messages.MessagesListAdapter;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
-import fsi.studymyselft.nguyenthanhthi.chatapp.data.Message;
-import fsi.studymyselft.nguyenthanhthi.chatapp.data.User;
+import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.Dialog;
+import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.Message;
+import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
 import fsi.studymyselft.nguyenthanhthi.chatapp.holders.CustomIncomingTextMessageViewHolder;
 import fsi.studymyselft.nguyenthanhthi.chatapp.holders.CustomOutcomingTextMessageViewHolder;
 
 public class ChatActivity extends AppCompatActivity
         implements MessageInput.InputListener {
 
-    private MessagesList messagesList; //UI
-    private MessageInput messageInput;
+    private MessagesList messagesList; //UI - widget
+    private MessageInput messageInput; //UI - widget
 
+    private Dialog myDialog;
+    private User myUser, otherUser;
     private Message newMessage;
+
     private ArrayList<Message> messages;
+
     private MessagesListAdapter<Message> messagesAdapter;
 
-    private FirebaseDatabase database;
-    private DatabaseReference rootReference, messagesReference, messagesUserReceiveReference;
     private FirebaseUser currentUser;
-
-    private User userSend, userReceive;
+    private FirebaseDatabase database;
+    private DatabaseReference rootReference, dialogsReference, myDialogReference,
+            messagesReference, membersReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        messagesList = findViewById(R.id.messagesList);
-        messageInput = findViewById(R.id.input);
+        messagesList = (MessagesList) findViewById(R.id.messagesList);
+        messageInput = (MessageInput) findViewById(R.id.input);
 
+        myDialog = new Dialog();
         messages = new ArrayList<>();
 
-        database = FirebaseDatabase.getInstance();
-        rootReference = database.getReference();
-        if (rootReference.child("Messages") == null) {
-            rootReference.setValue("Messages");
-        }
-        messagesReference = rootReference.child("Messages");
+        //get information of current user - myUser
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        userSend = new User(currentUser.getUid(), currentUser.getEmail());
+        myUser = new User(currentUser.getUid(), currentUser.getEmail());
 
-        //get information of user receive message
-        String userReceiveId = getIntent().getStringExtra("ID");
-        String userReceiveEmail = getIntent().getStringExtra("EMAIL");
-        userReceive = new User(userReceiveId, userReceiveEmail);
+        //get information of other User from Intent
+        String otherUserId = getIntent().getStringExtra("ID");
+        String otherUserEmail = getIntent().getStringExtra("EMAIL");
+        otherUser = new User(otherUserId, otherUserEmail);
 
-        getSupportActionBar().setTitle(userReceiveEmail);
+        //set name of dialog and show UI
+        getSupportActionBar().setTitle(otherUserEmail);
 
-        if (messagesReference.child(userReceiveId) == null) {
-            messagesReference.setValue(userReceiveId);
-        }
-        messagesUserReceiveReference = messagesReference.child(userReceiveId);
+        //update information users to myDialog
+        myDialog.addUserToListUsers(myUser);
+        myDialog.addUserToListUsers(otherUser);
 
         initMessageAdapter();
+
+        //get reference of root database
+        database = FirebaseDatabase.getInstance();
+        rootReference = database.getReference();
+
+        //get reference of Dialog Database
+        if (rootReference.child("Dialogs") == null) {
+            rootReference.setValue("Dialogs");
+        }
+        dialogsReference = rootReference.child("Dialogs");
+
+        //set reference of my dialog in database and get messages in this dialog
+        setReferenceToMyDialog();
+
+        messagesList.setAdapter(messagesAdapter);
 
         //validate and send message
         messageInput.setInputListener(this);
 
-        //get all messages from database to list "Messages"
-        pushDataMessagesToListMessages();
-
     }
 
-    private void pushDataMessagesToListMessages() {
-        messagesUserReceiveReference.addValueEventListener(new ValueEventListener() {
+    private void setReferenceToMyDialog() {
+        final String dialogName = (myUser.getId() + "|" + otherUser.getId());
+        final String reverseDialogName = (otherUser.getId() + "|" + myUser.getId());
+        myDialog.setName(dialogName);
+
+        dialogsReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                boolean isMyDialogExist = false;
                 if (dataSnapshot.exists()) {
-                    messagesAdapter.delete(messages);
-                    messages.clear();
-                    int i = 0;
-                    for (DataSnapshot data : dataSnapshot.getChildren()) {
-                        Message message = data.getValue(Message.class);
-                        messages.add(message);
+                    //if dialog database is exist
 
-//                        Toast.makeText(ChatActivity.this, ++i + "" + message.getContent(), Toast.LENGTH_SHORT).show();
-                        messagesAdapter.addToStart(message, true);
+                    for (DataSnapshot dialogSnapshot : dataSnapshot.getChildren()) {
+                        Dialog dialog = dialogSnapshot.getValue(Dialog.class);
+
+                        //check existence of my dialog
+                        if (dialog.getName().equals(dialogName) || dialog.getName().equals(reverseDialogName)) {
+                            if (dialog.getName().equals(reverseDialogName)) {
+                                myDialog.setName(reverseDialogName); //rename my dialog
+                            }
+                            isMyDialogExist = true;
+                            myDialog.setId(dialog.getId());
+                            break;
+                        }
                     }
                 }
 
-                messagesList.setAdapter(messagesAdapter);
+                System.out.println(myDialog.getName());
+                if (!isMyDialogExist) {
+                    //create new node in Dialog Database to save my dialog information
+                    String key = dialogsReference.push().getKey();
+                    myDialog.setId(key);
+                    dialogsReference.child(key).setValue(myDialog);
+                }
+
+                myDialogReference = dialogsReference.child(myDialog.getId());
+
+                //get all messages in my dialog database
+                getAllMessagesDialog();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void getAllMessagesDialog() {
+        if (myDialogReference.child("Messages") == null) {
+            myDialogReference.setValue("Messages");
+        }
+        messagesReference = myDialogReference.child("Messages");
+
+        messagesReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    Toast.makeText(ChatActivity.this, "Size of message list = " + myDialog.getMessages().size(), Toast.LENGTH_SHORT).show();
+                    messagesAdapter.delete(myDialog.getMessages());
+                    myDialog.removeAllMessagesFromListMessages();
+
+                    for (DataSnapshot messageSnapshot : dataSnapshot.getChildren()) {
+                        Message message = messageSnapshot.getValue(Message.class);
+                        myDialog.addMessageToListMessages(message);
+
+                        messagesAdapter.addToStart(message, true);
+                    }
+                }
             }
 
             @Override
@@ -126,15 +186,17 @@ public class ChatActivity extends AppCompatActivity
     @Override
     public boolean onSubmit(CharSequence input) {
         String messageText = String.valueOf(input);
-        if (messagesUserReceiveReference == null || messageText.isEmpty() || messageText.equals("")) {
+
+        if (messagesReference == null || messageText.isEmpty() || messageText.equals("")) {
             Toast.makeText(this, "udate new message to database fail", Toast.LENGTH_SHORT).show();
             return false;
         }
 
         //push new message to database
-        String key = messagesUserReceiveReference.push().getKey();
-        newMessage = new Message(key, messageText, userSend);
-        messagesUserReceiveReference.child(key).setValue(newMessage);
+        String key = messagesReference.push().getKey();
+        newMessage = new Message(key, messageText, myUser);
+        messagesReference.child(key).setValue(newMessage);
+
         return true;
     }
 
