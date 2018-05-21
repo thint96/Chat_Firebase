@@ -14,10 +14,10 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
         android:gravity="center"
-        android:textStyle="bold"
         android:text="Login"
         android:textColor="@color/colorPrimaryDark"
-        android:textSize="30dp"/>
+        android:textSize="30dp"
+        android:textStyle="bold"/>
 
     <EditText
         android:id="@+id/edt_email"
@@ -45,11 +45,11 @@
         android:text="Login"/>
 
     <TextView
-        android:id="@+id/register"
+        android:id="@+id/goToRegister"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="Click here to register"
-        android:textSize="20dp"/>
+        android:textSize="20dp" />
 
 </LinearLayout>

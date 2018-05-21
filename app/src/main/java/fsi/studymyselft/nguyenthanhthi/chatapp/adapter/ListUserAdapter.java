@@ -8,10 +8,9 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
-import fsi.studymyselft.nguyenthanhthi.chatapp.data.User;
+import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
 
 /**
  * Created by thanhthi on 04/05/2018.

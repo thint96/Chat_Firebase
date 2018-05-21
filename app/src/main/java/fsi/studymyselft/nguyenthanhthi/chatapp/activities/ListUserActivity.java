@@ -3,15 +3,12 @@ package fsi.studymyselft.nguyenthanhthi.chatapp.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -19,13 +16,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
 import fsi.studymyselft.nguyenthanhthi.chatapp.adapter.ListUserAdapter;
-import fsi.studymyselft.nguyenthanhthi.chatapp.data.User;
+import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
 
 public class ListUserActivity extends AppCompatActivity {
 
@@ -57,7 +51,7 @@ public class ListUserActivity extends AppCompatActivity {
         userReference = rootReference.child("Users");
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        lvUsers = findViewById(R.id.lvUsers);
+        lvUsers = (ListView) findViewById(R.id.lvUsers);
 
         //update database users if current user have already registered
         updateNewUserToDatabase();

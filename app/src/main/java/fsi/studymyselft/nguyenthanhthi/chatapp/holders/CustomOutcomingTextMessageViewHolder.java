@@ -4,7 +4,7 @@ import android.view.View;
 
 import com.stfalcon.chatkit.messages.MessageHolders;
 
-import fsi.studymyselft.nguyenthanhthi.chatapp.data.Message;
+import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.Message;
 
 /**
  * Created by thanhthi on 08/05/2018.

@@ -60,6 +60,6 @@
         android:text="Click here to login"
         android:textSize="20dp"
         android:gravity="center"
-        android:id="@+id/login"/>
+        android:id="@+id/goToLogin"/>
 
 </LinearLayout>

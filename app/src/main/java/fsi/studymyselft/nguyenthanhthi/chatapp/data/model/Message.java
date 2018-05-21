@@ -1,4 +1,4 @@
-package fsi.studymyselft.nguyenthanhthi.chatapp.data;
+package fsi.studymyselft.nguyenthanhthi.chatapp.data.model;
 
 import com.stfalcon.chatkit.commons.models.IMessage;
 import com.stfalcon.chatkit.commons.models.IUser;

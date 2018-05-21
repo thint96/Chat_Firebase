@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
-import fsi.studymyselft.nguyenthanhthi.chatapp.data.User;
+import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -50,10 +50,10 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        edtEmail = findViewById(R.id.edt_email);
-        edtPassword = findViewById(R.id.edt_password);
-        buttonLogin = findViewById(R.id.btn_login);
-        goToRegister = findViewById(R.id.register);
+        edtEmail = (EditText) findViewById(R.id.edt_email);
+        edtPassword = (EditText) findViewById(R.id.edt_password);
+        buttonLogin = (Button) findViewById(R.id.btn_login);
+        goToRegister = (TextView) findViewById(R.id.goToRegister);
 
         userList = new ArrayList<>();
 
@@ -96,8 +96,11 @@ public class LoginActivity extends AppCompatActivity {
                         return;
                     }
 
-                    Random rd = new Random(total);
-                    int index = rd.nextInt(total);
+                    Random rd = new Random(1000);
+                    int index;
+                    do {
+                        index = rd.nextInt(total);
+                    } while (index < 0 || index >= total);
                     User user = userList.get(index);
                     inputEmail = user.getEmail();
                     inputPass = "123456";
