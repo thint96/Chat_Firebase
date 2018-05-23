@@ -138,7 +138,7 @@ public class MessagesListAdapter<MESSAGE extends IMessage>
      * @param scroll  {@code true} if need to scroll list to bottom when message added.
      */
     public void addToStart(MESSAGE message, boolean scroll) {
-       // boolean isNewMessageToday = !isPreviousSameDate(0, message.getCreatedAt());
+//        boolean isNewMessageToday = !isPreviousSameDate(0, message.getCreatedAt());
         boolean isNewMessageToday = false;
 
         if (isNewMessageToday) {

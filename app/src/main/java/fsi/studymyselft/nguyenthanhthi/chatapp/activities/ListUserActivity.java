@@ -80,7 +80,7 @@ public class ListUserActivity extends AppCompatActivity {
     }
 
     private void pushDataUsersToListUsers() {
-        userReference.addValueEventListener(new ValueEventListener() {
+        userReference.orderByChild("email").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {

@@ -2,6 +2,7 @@ package fsi.studymyselft.nguyenthanhthi.chatapp.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -11,12 +12,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
+import com.stfalcon.chatkit.commons.ImageLoader;
 import com.stfalcon.chatkit.messages.MessageHolders;
 import com.stfalcon.chatkit.messages.MessageInput;
 import com.stfalcon.chatkit.messages.MessagesList;
 import com.stfalcon.chatkit.messages.MessagesListAdapter;
-
-import java.util.ArrayList;
 
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.Dialog;
@@ -35,9 +36,9 @@ public class ChatActivity extends AppCompatActivity
     private User myUser, otherUser;
     private Message newMessage;
 
-    private ArrayList<Message> messages;
-
     private MessagesListAdapter<Message> messagesAdapter;
+
+    private ImageLoader imageLoader;
 
     private FirebaseUser currentUser;
     private FirebaseDatabase database;
@@ -53,16 +54,17 @@ public class ChatActivity extends AppCompatActivity
         messageInput = (MessageInput) findViewById(R.id.input);
 
         myDialog = new Dialog();
-        messages = new ArrayList<>();
 
         //get information of current user - myUser
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        myUser = new User(currentUser.getUid(), currentUser.getEmail());
+        String myAvatarUrl = "http://vi.fanpop.com/clubs/doraemon/answers/show/484361/post-pic-doraemon-with-nobita";
+        myUser = new User(currentUser.getUid(), currentUser.getEmail(), myAvatarUrl);
 
         //get information of other User from Intent
         String otherUserId = getIntent().getStringExtra("ID");
         String otherUserEmail = getIntent().getStringExtra("EMAIL");
-        otherUser = new User(otherUserId, otherUserEmail);
+        String otherAvatarUrl = "http://www.socimage.net/user/doraemon_mychildhood/1757399948/1069505800034932735_1757399948";
+        otherUser = new User(otherUserId, otherUserEmail, otherAvatarUrl);
 
         //set name of dialog and show UI
         getSupportActionBar().setTitle(otherUserEmail);
@@ -151,12 +153,14 @@ public class ChatActivity extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    Toast.makeText(ChatActivity.this, "Size of message list = " + myDialog.getMessages().size(), Toast.LENGTH_SHORT).show();
                     messagesAdapter.delete(myDialog.getMessages());
                     myDialog.removeAllMessagesFromListMessages();
 
                     for (DataSnapshot messageSnapshot : dataSnapshot.getChildren()) {
                         Message message = messageSnapshot.getValue(Message.class);
+
+                        System.out.println("Count of messages in database = " + dataSnapshot.getChildrenCount());
+
                         myDialog.addMessageToListMessages(message);
 
                         messagesAdapter.addToStart(message, true);
@@ -172,6 +176,13 @@ public class ChatActivity extends AppCompatActivity
     }
 
     private void initMessageAdapter() {
+        imageLoader = new ImageLoader() {
+            @Override
+            public void loadImage(ImageView imageView, String url) {
+                Picasso.with(ChatActivity.this).load(url).into(imageView);
+            }
+        };
+
         MessageHolders messageHolders = new MessageHolders()
                 .setIncomingTextConfig(
                         CustomIncomingTextMessageViewHolder.class,
@@ -180,7 +191,7 @@ public class ChatActivity extends AppCompatActivity
                         CustomOutcomingTextMessageViewHolder.class,
                         R.layout.item_custom_outcoming_text_message);
 
-        messagesAdapter = new MessagesListAdapter<Message>(currentUser.getUid(), messageHolders, null);
+        messagesAdapter = new MessagesListAdapter<Message>(currentUser.getUid(), messageHolders, imageLoader);
     }
 
     @Override
