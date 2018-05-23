@@ -7,14 +7,14 @@
     android:layout_margin="18dp"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context="fsi.studymyselft.nguyenthanhthi.chatapp.activities.LoginActivity">
+    tools:context=".activities.authen.login.LoginActivity">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
         android:gravity="center"
-        android:text="Login"
+        android:text="@string/title_activity_login"
         android:textColor="@color/colorPrimaryDark"
         android:textSize="30dp"
         android:textStyle="bold"/>
@@ -24,16 +24,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:hint="Enter email"
+        android:hint="@string/enter_email"
         android:inputType="text"
-        android:maxLines="1"/>
+        android:maxLines="1"
+        tools:ignore="TextFields"/>
 
     <EditText
         android:id="@+id/edt_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:hint="Enter password"
+        android:hint="@string/enter_password"
         android:inputType="textPassword"
         android:maxLines="1"/>
 
@@ -42,14 +43,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
-        android:text="Login"/>
+        android:text="@string/login"/>
 
     <TextView
         android:id="@+id/goToRegister"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Click here to register"
-        android:textSize="20dp" />
+        android:text="@string/go_to_sign_up"
+        android:textSize="16sp"/>
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:visibility="gone"/>
 
 </LinearLayout>

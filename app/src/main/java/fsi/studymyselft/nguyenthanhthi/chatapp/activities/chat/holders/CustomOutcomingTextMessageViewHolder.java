@@ -1,4 +1,4 @@
-package fsi.studymyselft.nguyenthanhthi.chatapp.holders;
+package fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat.holders;
 
 import android.view.View;
 

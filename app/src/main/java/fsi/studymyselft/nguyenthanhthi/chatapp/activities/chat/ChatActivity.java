@@ -1,4 +1,4 @@
-package fsi.studymyselft.nguyenthanhthi.chatapp.activities;
+package fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -20,11 +20,11 @@ import com.stfalcon.chatkit.messages.MessagesList;
 import com.stfalcon.chatkit.messages.MessagesListAdapter;
 
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
+import fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat.holders.CustomIncomingTextMessageViewHolder;
+import fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat.holders.CustomOutcomingTextMessageViewHolder;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.Dialog;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.Message;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
-import fsi.studymyselft.nguyenthanhthi.chatapp.holders.CustomIncomingTextMessageViewHolder;
-import fsi.studymyselft.nguyenthanhthi.chatapp.holders.CustomOutcomingTextMessageViewHolder;
 
 public class ChatActivity extends AppCompatActivity
         implements MessageInput.InputListener {

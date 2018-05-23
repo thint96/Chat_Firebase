@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="fsi.studymyselft.nguyenthanhthi.chatapp.activities.ListUserActivity">
+    tools:context="fsi.studymyselft.nguyenthanhthi.chatapp.activities.listUser.ListUserActivity">
 
     <ListView
         android:id="@+id/lvUsers"

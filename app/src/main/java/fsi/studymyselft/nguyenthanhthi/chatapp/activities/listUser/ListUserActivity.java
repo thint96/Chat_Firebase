@@ -1,4 +1,4 @@
-package fsi.studymyselft.nguyenthanhthi.chatapp.activities;
+package fsi.studymyselft.nguyenthanhthi.chatapp.activities.listUser;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,6 +18,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
+import fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat.ChatActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.adapter.ListUserAdapter;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
 

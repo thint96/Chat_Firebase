@@ -17,4 +17,8 @@
     </string>
 
     <string name="hint_enter_a_message">Type a message…</string>
+    <string name="enter_email">Enter email</string>
+    <string name="enter_password">Enter password</string>
+    <string name="login">Login</string>
+    <string name="go_to_sign_up">Don\'t have an account? Sign up!</string>
 </resources>
