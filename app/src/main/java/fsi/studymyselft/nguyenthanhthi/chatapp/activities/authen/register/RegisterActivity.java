@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -70,11 +71,18 @@ public class RegisterActivity extends AppCompatActivity implements RegisterView,
     @Override
     public void showProgress() {
         progressBar.setVisibility(View.VISIBLE);
+
+        //disable the user interaction
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+//                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
 
     @Override
     public void hideProgress() {
         progressBar.setVisibility(View.GONE);
+
+        //get user interaction back
+//        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
 
     @Override
