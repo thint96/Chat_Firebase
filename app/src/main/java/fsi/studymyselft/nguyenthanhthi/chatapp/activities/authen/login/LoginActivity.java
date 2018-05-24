@@ -1,13 +1,17 @@
 package fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.login;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -32,6 +36,8 @@ import fsi.studymyselft.nguyenthanhthi.chatapp.R;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.register.RegisterActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.listUser.ListUserActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
+
+import static fsi.studymyselft.nguyenthanhthi.chatapp.R.color.gray;
 
 public class LoginActivity extends AppCompatActivity implements LoginView, View.OnClickListener {
 
@@ -107,11 +113,18 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
     @Override
     public void showProgress() {
         progressBar.setVisibility(View.VISIBLE);
+
+        //disable the user interaction
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
 
     @Override
     public void hideProgress() {
         progressBar.setVisibility(View.GONE);
+
+        //get user interaction back
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
 
     @Override
@@ -150,7 +163,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.btn_login) {
-            showProgress();
             login();
         } else if (v.getId() == R.id.goToRegister) {
             //go to Register Activity
@@ -176,7 +188,11 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
 
             //push data users to userList
             pushDataUsersToList();
-            int total = userList.size(); //total user records in database Users
+
+            int total = 0;
+//            do {
+                total = userList.size(); //total user records in database Users
+//            } while (total > 0);
 
             //check total users in database
             if (total == 0) {
@@ -185,7 +201,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
             }
 
             //random users in database to login
-            Random rd = new Random(100000);
+            Random rd = new Random();
             int index;
             do {
                 index = rd.nextInt(total);
@@ -239,6 +255,8 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
     }
 
     private void loginWithEmailPassword(final String email, String password) {
+        showProgress();
+
         auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -248,7 +266,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
                             Toast.makeText(getContext(), "Login successfully!", Toast.LENGTH_SHORT).show();
 
                             //show greeting
-                            Toast.makeText(getContext(), "Wellcome " + email.toString(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Welcome " + email.toString(), Toast.LENGTH_SHORT).show();
 
                             //go to List Users Activity
                             startActivity(new Intent(getContext(), ListUserActivity.class));
