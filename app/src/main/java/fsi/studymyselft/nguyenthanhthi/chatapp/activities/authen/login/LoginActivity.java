@@ -1,20 +1,16 @@
 package fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.login;
 
-import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,16 +33,14 @@ import fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.register.Regist
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.listUser.ListUserActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
 
-import static fsi.studymyselft.nguyenthanhthi.chatapp.R.color.gray;
-
 public class LoginActivity extends AppCompatActivity implements LoginView, View.OnClickListener {
 
     private final String TAG = "LoginActivity";
 
     private EditText edtEmail, edtPassword;
-    private Button buttonLogin;
+    private Button buttonLogin, buttonAutoLogin;
     private TextView goToRegister;
-    private ProgressBar progressBar;
+    private ProgressDialog progressDialog;
 
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener authStateListener;
@@ -67,6 +61,8 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
         database = FirebaseDatabase.getInstance();
         rootReference = database.getReference();
         usersReference = rootReference.child("Users");
+
+        pushDataUsersToList();
 
         bindViews();
 
@@ -98,10 +94,11 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
         edtEmail = (EditText) findViewById(R.id.edt_email);
         edtPassword = (EditText) findViewById(R.id.edt_password);
         buttonLogin = (Button) findViewById(R.id.btn_login);
+        buttonAutoLogin = (Button) findViewById(R.id.btn_auto_login);
         goToRegister = (TextView) findViewById(R.id.goToRegister);
-        progressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
         buttonLogin.setOnClickListener(this);
+        buttonAutoLogin.setOnClickListener(this);
         goToRegister.setOnClickListener(this);
     }
 
@@ -112,19 +109,12 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
 
     @Override
     public void showProgress() {
-        progressBar.setVisibility(View.VISIBLE);
-
-        //disable the user interaction
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        progressDialog = ProgressDialog.show(getContext(), "Signing in", "Please wait...");
     }
 
     @Override
     public void hideProgress() {
-        progressBar.setVisibility(View.GONE);
-
-        //get user interaction back
-        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        progressDialog.dismiss();
     }
 
     @Override
@@ -145,7 +135,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
         if (password.equals("") || TextUtils.isEmpty(password)) {
             edtPassword.setError("Password can't be blank!");
         } else if (password.length() < 6) {
-            edtPassword.setError("Password must have more than 5 characters");
+            edtPassword.setError("Password must have min 6 characters");
         }
     }
 
@@ -167,52 +157,8 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
         } else if (v.getId() == R.id.goToRegister) {
             //go to Register Activity
             navigateToSignUp();
-        }
-    }
-
-    /**
-     * do action login when click button Login
-     */
-    private void login() {
-        //input email and password of user
-        String inputEmail = edtEmail.getText().toString().trim();
-        String inputPass = edtPassword.getText().toString().trim();
-
-        //automatic login - set default email and password
-        if (inputEmail.isEmpty() && inputPass.isEmpty()) {
-            //check database
-            if (usersReference == null) {
-                Toast.makeText(getContext(), "Database Users have not created!", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            //push data users to userList
-            pushDataUsersToList();
-
-            int total = 0;
-//            do {
-                total = userList.size(); //total user records in database Users
-//            } while (total > 0);
-
-            //check total users in database
-            if (total == 0) {
-//                Toast.makeText(getContext(), "Do not have data users in database!", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            //random users in database to login
-            Random rd = new Random();
-            int index;
-            do {
-                index = rd.nextInt(total);
-            } while (index < 0 || index >= total);
-            User user = userList.get(index);
-            inputEmail = user.getEmail();
-            inputPass = "123456";
-        }
-
-        if (!hasError(inputEmail, inputPass)) {
-            loginWithEmailPassword(inputEmail, inputPass);
+        } else if (v.getId() == R.id.btn_auto_login) {
+            autoLogin();
         }
     }
 
@@ -226,6 +172,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
                         User user = snapshot.getValue(User.class);
                         userList.add(user);
                     }
+                    Log.d(TAG, "total user in list user (1) = " + userList.size());
                 }
             }
 
@@ -235,6 +182,65 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
             }
         });
     }
+
+    /**
+     * automatic login - set default email and password
+     */
+    private void autoLogin() {
+        showProgress();
+
+        //input email and password of user
+        String inputEmail = edtEmail.getText().toString().trim();
+        String inputPass = edtPassword.getText().toString().trim();
+
+        if (!hasError(inputEmail, inputPass)) {
+            login();
+            return;
+        }
+        if (inputEmail.isEmpty() && inputPass.isEmpty()) {
+            //check database
+            if (usersReference == null) {
+                Toast.makeText(getContext(), "Users database has not been created!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            int total = 0; //total user records in database Users
+
+            while (total <= 0) {
+                //push data users to userList
+                total = userList.size();
+                Log.d(TAG, "total user records = " + total);
+            }
+
+            //random users in database to login
+            Random rd = new Random();
+            int index;
+            do {
+                index = rd.nextInt(total);
+            } while (index < 0 || index >= total);
+            User user = userList.get(index);
+            inputEmail = user.getEmail();
+            inputPass = "123456";
+
+            loginWithEmailPassword(inputEmail, inputPass);
+        }
+    }
+
+    /**
+     * do action login when click button Login
+     */
+    private void login() {
+        //input email and password of user
+        String inputEmail = edtEmail.getText().toString().trim();
+        String inputPass = edtPassword.getText().toString().trim();
+
+        if (!hasError(inputEmail, inputPass)) {
+            showProgress();
+            loginWithEmailPassword(inputEmail, inputPass);
+        }
+    }
+
+
 
     private Boolean hasError(String email, String pass) {
         Boolean hasError = false;
@@ -255,8 +261,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
     }
 
     private void loginWithEmailPassword(final String email, String password) {
-        showProgress();
-
         auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -305,5 +309,4 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
 //            }
 //        };
     }
-
 }
