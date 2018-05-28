@@ -11,8 +11,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -23,12 +25,12 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-import fsi.studymyselft.nguyenthanhthi.chatapp.other.InternetChecking;
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.login.LoginActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat.ChatActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.adapter.ListUserAdapter;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
+import fsi.studymyselft.nguyenthanhthi.chatapp.other.InternetChecking;
 
 public class ListUserActivity extends AppCompatActivity implements ListUserView {
 
@@ -80,7 +82,12 @@ public class ListUserActivity extends AppCompatActivity implements ListUserView 
         //update database users if current user have already registered
         updateNewUserToDatabase();
 
-        showUsersList();
+        //get all users from database to list "users"
+        pushDataUsersToListUsers();
+
+        adapter = new ListUserAdapter(getContext(), users);
+        lvUsers.setAdapter(adapter);
+//        showUsersList();
 
         hideProgress();
 
@@ -117,11 +124,7 @@ public class ListUserActivity extends AppCompatActivity implements ListUserView 
 
     @Override
     public void showUsersList() {
-        //get all users from database to list "users"
-        pushDataUsersToListUsers();
 
-        adapter = new ListUserAdapter(getContext(), users);
-        lvUsers.setAdapter(adapter);
     }
 
     @Override
@@ -141,21 +144,32 @@ public class ListUserActivity extends AppCompatActivity implements ListUserView 
 
     @Override
     public void logout() {
-        auth.signOut();
+//        auth.signOut();
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        startActivity(new Intent(getContext(), LoginActivity.class));
+                        finish();
+                    }
+                });
 
-        FirebaseAuth.AuthStateListener stateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                currentUser = firebaseAuth.getCurrentUser();
-                if (currentUser == null) {
-                    Toast.makeText(getContext(), "Logout success!", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(getContext(), LoginActivity.class));
-                    finish();
-                } else {
-                    Toast.makeText(getContext(), "Logout fail!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        };
+//        auth.signOut();
+//
+//        FirebaseAuth.AuthStateListener stateListener = new FirebaseAuth.AuthStateListener() {
+//            @Override
+//            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+//                currentUser = firebaseAuth.getCurrentUser();
+//                if (currentUser == null) {
+//                    Toast.makeText(getContext(), "Logout success!", Toast.LENGTH_SHORT).show();
+//                    startActivity(new Intent(getContext(), LoginActivity.class));
+//                    finish();
+//                } else {
+//                    Toast.makeText(getContext(), "Logout fail!", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        };
     }
 
     private void updateNewUserToDatabase() {

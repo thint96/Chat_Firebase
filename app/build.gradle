@@ -4,11 +4,12 @@ android {
     compileSdkVersion 26
     defaultConfig {
         applicationId "fsi.studymyselft.nguyenthanhthi.chatapp"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        resConfigs "en" // And any other languages you support
     }
     buildTypes {
         release {
@@ -30,6 +31,7 @@ dependencies {
     //noinspection GradleCompatible
     implementation 'com.android.support:appcompat-v7:26.0.0-alpha1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation 'com.firebaseui:firebase-ui-auth:2.3.0'
     implementation 'com.google.firebase:firebase-auth:11.0.4'
     implementation 'com.google.firebase:firebase-database:11.0.4'
     testImplementation 'junit:junit:4.12'
