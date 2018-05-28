@@ -144,7 +144,6 @@ public class ListUserActivity extends AppCompatActivity implements ListUserView 
 
     @Override
     public void logout() {
-//        auth.signOut();
         AuthUI.getInstance()
                 .signOut(this)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -154,22 +153,6 @@ public class ListUserActivity extends AppCompatActivity implements ListUserView 
                         finish();
                     }
                 });
-
-//        auth.signOut();
-//
-//        FirebaseAuth.AuthStateListener stateListener = new FirebaseAuth.AuthStateListener() {
-//            @Override
-//            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-//                currentUser = firebaseAuth.getCurrentUser();
-//                if (currentUser == null) {
-//                    Toast.makeText(getContext(), "Logout success!", Toast.LENGTH_SHORT).show();
-//                    startActivity(new Intent(getContext(), LoginActivity.class));
-//                    finish();
-//                } else {
-//                    Toast.makeText(getContext(), "Logout fail!", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        };
     }
 
     private void updateNewUserToDatabase() {
