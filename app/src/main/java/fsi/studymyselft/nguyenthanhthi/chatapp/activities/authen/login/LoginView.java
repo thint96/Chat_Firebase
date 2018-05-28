@@ -9,10 +9,6 @@ import fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.AuthView;
 
 public interface LoginView extends BaseView, AuthView {
 
-    public void showProgress();
-
-    public void hideProgress();
-
     public void setUsernameError();
 
     public void setPasswordError();

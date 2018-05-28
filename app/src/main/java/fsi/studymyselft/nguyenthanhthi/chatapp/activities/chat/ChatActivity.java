@@ -1,5 +1,6 @@
 package fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -34,10 +35,11 @@ import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.Message;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
 
 public class ChatActivity extends AppCompatActivity
-        implements BaseMainView, MessageInput.InputListener {
+        implements ChatView, MessageInput.InputListener {
 
     private MessagesList messagesList; //UI - widget
     private MessageInput messageInput; //UI - widget
+    private ProgressDialog progressDialog;
     private Menu menu;
 
     private Dialog myDialog;
@@ -101,10 +103,7 @@ public class ChatActivity extends AppCompatActivity
 
         auth = FirebaseAuth.getInstance();
 
-        //set reference of my dialog in database and get messages in this dialog
-        setReferenceToMyDialog();
-
-        messagesList.setAdapter(messagesAdapter);
+        showMessagesList();
 
         //validate and send message
         messageInput.setInputListener(this);
@@ -113,6 +112,16 @@ public class ChatActivity extends AppCompatActivity
     @Override
     public Context getContext() {
         return ChatActivity.this;
+    }
+
+    @Override
+    public void showProgress() {
+        progressDialog = ProgressDialog.show(getContext(), "Loading list users", "Please wait...");
+    }
+
+    @Override
+    public void hideProgress() {
+        progressDialog.dismiss();
     }
 
     @Override
@@ -134,12 +143,22 @@ public class ChatActivity extends AppCompatActivity
         return true;
     }
 
-    private void deleteMessage() {
+    @Override
+    public void deleteMessage() {
 
     }
 
-    private void copyToClipBoard() {
+    @Override
+    public void copyToClipBoard() {
 
+    }
+
+    @Override
+    public void showMessagesList() {
+        //set reference of my dialog in database and get messages in this dialog
+        setReferenceToMyDialog();
+
+        messagesList.setAdapter(messagesAdapter);
     }
 
     @Override
@@ -239,7 +258,8 @@ public class ChatActivity extends AppCompatActivity
         });
     }
 
-    private void initMessageAdapter() {
+    @Override
+    public void initMessageAdapter() {
         imageLoader = new ImageLoader() {
             @Override
             public void loadImage(ImageView imageView, String url) {

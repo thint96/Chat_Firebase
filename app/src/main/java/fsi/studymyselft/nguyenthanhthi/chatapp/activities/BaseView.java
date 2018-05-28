@@ -12,4 +12,8 @@ public interface BaseView {
 
     public Context getContext();
 
+    public void showProgress();
+
+    public void hideProgress();
+
 }

@@ -3,6 +3,8 @@ package fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.login;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -55,9 +57,11 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        //check to auto-login
+        checkUserHaveSignedIn();
+
         userList = new ArrayList<>();
 
-        auth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
         rootReference = database.getReference();
         usersReference = rootReference.child("Users");
@@ -65,21 +69,22 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
         pushDataUsersToList();
 
         bindViews();
-
-        //check to auto-login
-        checkUserHaveSignedIn();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-//        auth.addAuthStateListener(authStateListener);
+        auth = FirebaseAuth.getInstance();
+        currentUser = auth.getCurrentUser();
+        if (currentUser != null) {
+            auth.addAuthStateListener(authStateListener);
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-//        if (authStateListener != null) {
+//        if (auth.getCurrentUser() == null) {
 //            auth.removeAuthStateListener(authStateListener);
 //        }
     }
@@ -123,7 +128,8 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
 
         if (email.equals("") || TextUtils.isEmpty(email)) { //the string is null or 0-length
             edtEmail.setError("Email can't be blank!");
-        } else if (!email.contains("@")) {
+        }
+        else if (!email.contains("@")) {
             edtEmail.setError("Invalid email!");
         }
     }
@@ -134,7 +140,8 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
 
         if (password.equals("") || TextUtils.isEmpty(password)) {
             edtPassword.setError("Password can't be blank!");
-        } else if (password.length() < 6) {
+        }
+        else if (password.length() < 6) {
             edtPassword.setError("Password must have min 6 characters");
         }
     }
@@ -154,11 +161,10 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
     public void onClick(View v) {
         if (v.getId() == R.id.btn_login) {
             login();
-        } else if (v.getId() == R.id.goToRegister) {
+        }
+        else if (v.getId() == R.id.goToRegister) {
             //go to Register Activity
             navigateToSignUp();
-        } else if (v.getId() == R.id.btn_auto_login) {
-            autoLogin();
         }
     }
 
@@ -181,49 +187,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
 
             }
         });
-    }
-
-    /**
-     * automatic login - set default email and password
-     */
-    private void autoLogin() {
-        showProgress();
-
-        //input email and password of user
-        String inputEmail = edtEmail.getText().toString().trim();
-        String inputPass = edtPassword.getText().toString().trim();
-
-        if (!hasError(inputEmail, inputPass)) {
-            login();
-            return;
-        }
-        if (inputEmail.isEmpty() && inputPass.isEmpty()) {
-            //check database
-            if (usersReference == null) {
-                Toast.makeText(getContext(), "Users database has not been created!", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            int total = 0; //total user records in database Users
-
-            while (total <= 0) {
-                //push data users to userList
-                total = userList.size();
-                Log.d(TAG, "total user records = " + total);
-            }
-
-            //random users in database to login
-            Random rd = new Random();
-            int index;
-            do {
-                index = rd.nextInt(total);
-            } while (index < 0 || index >= total);
-            User user = userList.get(index);
-            inputEmail = user.getEmail();
-            inputPass = "123456";
-
-            loginWithEmailPassword(inputEmail, inputPass);
-        }
     }
 
     /**
@@ -290,23 +253,23 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
 
     /**
      * check user have login but don't logout
-     * if true then user must'n login
+     * if true then user mustn't login
      */
     private void checkUserHaveSignedIn() {
-//        authStateListener = new FirebaseAuth.AuthStateListener() {
-//            @Override
-//            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-//                FirebaseUser userSignedIn = firebaseAuth.getCurrentUser();
-//                if (userSignedIn != null) {
-//                    //user have login but don't logout
-//                    Log.d(TAG, "onAuthStateChanged:signed_in:" + userSignedIn.getUid());
-//                    startActivity(new Intent(LoginActivity.this, ListUserActivity.class));
-//                    finish();
-//                }
-//                else {
-//                    Log.d(TAG, "onAuthStateChanged:sign_out");
-//                }
-//            }
-//        };
+        authStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser userSignedIn = firebaseAuth.getCurrentUser();
+                if (userSignedIn != null) {
+                    //user have login but don't logout
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + userSignedIn.getUid());
+                    startActivity(new Intent(LoginActivity.this, ListUserActivity.class));
+                    finish();
+                }
+                else {
+                    Log.d(TAG, "onAuthStateChanged:sign_out");
+                }
+            }
+        };
     }
 }
