@@ -1,7 +1,13 @@
 package fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat;
 
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -20,6 +26,8 @@ import com.stfalcon.chatkit.messages.MessagesList;
 import com.stfalcon.chatkit.messages.MessagesListAdapter;
 
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
+import fsi.studymyselft.nguyenthanhthi.chatapp.activities.BaseMainView;
+import fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.login.LoginActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat.holders.CustomIncomingTextMessageViewHolder;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat.holders.CustomOutcomingTextMessageViewHolder;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.Dialog;
@@ -27,10 +35,12 @@ import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.Message;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
 
 public class ChatActivity extends AppCompatActivity
-        implements MessageInput.InputListener {
+        implements ChatView, MessageInput.InputListener {
 
     private MessagesList messagesList; //UI - widget
     private MessageInput messageInput; //UI - widget
+    private ProgressDialog progressDialog;
+    private Menu menu;
 
     private Dialog myDialog;
     private User myUser, otherUser;
@@ -40,6 +50,7 @@ public class ChatActivity extends AppCompatActivity
 
     private ImageLoader imageLoader;
 
+    private FirebaseAuth auth;
     private FirebaseUser currentUser;
     private FirebaseDatabase database;
     private DatabaseReference rootReference, dialogsReference, myDialogReference,
@@ -50,6 +61,11 @@ public class ChatActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
+        bindViews();
+    }
+
+    @Override
+    public void bindViews() {
         messagesList = (MessagesList) findViewById(R.id.messagesList);
         messageInput = (MessageInput) findViewById(R.id.input);
 
@@ -85,14 +101,83 @@ public class ChatActivity extends AppCompatActivity
         }
         dialogsReference = rootReference.child("Dialogs");
 
+        auth = FirebaseAuth.getInstance();
+
+        showMessagesList();
+
+        //validate and send message
+        messageInput.setInputListener(this);
+    }
+
+    @Override
+    public Context getContext() {
+        return ChatActivity.this;
+    }
+
+    @Override
+    public void showProgress() {
+        progressDialog = ProgressDialog.show(getContext(), "Loading list users", "Please wait...");
+    }
+
+    @Override
+    public void hideProgress() {
+        progressDialog.dismiss();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.logout) {
+            logout();
+        } else if (item.getItemId() == R.id.copy) {
+            copyToClipBoard();
+        } else if (item.getItemId() == R.id.delete) {
+            deleteMessage();
+        }
+        return true;
+    }
+
+    @Override
+    public void deleteMessage() {
+
+    }
+
+    @Override
+    public void copyToClipBoard() {
+
+    }
+
+    @Override
+    public void showMessagesList() {
         //set reference of my dialog in database and get messages in this dialog
         setReferenceToMyDialog();
 
         messagesList.setAdapter(messagesAdapter);
+    }
 
-        //validate and send message
-        messageInput.setInputListener(this);
+    @Override
+    public void logout() {
+        auth.signOut();
 
+        FirebaseAuth.AuthStateListener stateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                currentUser = firebaseAuth.getCurrentUser();
+                if (currentUser == null) {
+                    Toast.makeText(getContext(), "Logout success!", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(getContext(), LoginActivity.class));
+                    finish();
+                } else {
+                    Toast.makeText(getContext(), "Logout fail!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
     }
 
     private void setReferenceToMyDialog() {
@@ -104,9 +189,8 @@ public class ChatActivity extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 boolean isMyDialogExist = false;
-                if (dataSnapshot.exists()) {
-                    //if dialog database is exist
 
+                if (dataSnapshot.exists()) { //if dialog database is exist
                     for (DataSnapshot dialogSnapshot : dataSnapshot.getChildren()) {
                         Dialog dialog = dialogSnapshot.getValue(Dialog.class);
 
@@ -122,7 +206,6 @@ public class ChatActivity extends AppCompatActivity
                     }
                 }
 
-                System.out.println(myDialog.getName());
                 if (!isMyDialogExist) {
                     //create new node in Dialog Database to save my dialog information
                     String key = dialogsReference.push().getKey();
@@ -175,11 +258,12 @@ public class ChatActivity extends AppCompatActivity
         });
     }
 
-    private void initMessageAdapter() {
+    @Override
+    public void initMessageAdapter() {
         imageLoader = new ImageLoader() {
             @Override
             public void loadImage(ImageView imageView, String url) {
-                Picasso.with(ChatActivity.this).load(url).into(imageView);
+                Picasso.with(getContext()).load(url).into(imageView);
             }
         };
 
@@ -199,7 +283,7 @@ public class ChatActivity extends AppCompatActivity
         String messageText = String.valueOf(input);
 
         if (messagesReference == null || messageText.isEmpty() || messageText.equals("")) {
-            Toast.makeText(this, "udate new message to database fail", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "update new message to database failure", Toast.LENGTH_SHORT).show();
             return false;
         }
 
@@ -210,5 +294,4 @@ public class ChatActivity extends AppCompatActivity
 
         return true;
     }
-
 }
