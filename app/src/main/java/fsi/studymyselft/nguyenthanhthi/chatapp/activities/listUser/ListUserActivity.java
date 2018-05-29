@@ -57,14 +57,15 @@ public class ListUserActivity extends AppCompatActivity implements ListUserView 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_user);
 
-        showErrorInternetCheckingIfExist();
-
         bindViews();
     }
 
     @Override
     public void bindViews() {
+        showErrorInternetCheckingIfExist();
+
         showProgress();
+
         users = new ArrayList<>();
 
         database = FirebaseDatabase.getInstance();

@@ -34,6 +34,7 @@ import fsi.studymyselft.nguyenthanhthi.chatapp.R;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.register.RegisterActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.listUser.ListUserActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
+import fsi.studymyselft.nguyenthanhthi.chatapp.other.InternetChecking;
 
 public class LoginActivity extends AppCompatActivity implements LoginView, View.OnClickListener {
 
@@ -82,20 +83,14 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-//        if (auth.getCurrentUser() == null) {
-//            auth.removeAuthStateListener(authStateListener);
-//        }
-    }
-
-    @Override
     public void showAuthError() {
         Toast.makeText(getContext(), "Invalid username and password combination.", Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void bindViews() {
+        showErrorInternetCheckingIfExist();
+
         edtEmail = (EditText) findViewById(R.id.edt_email);
         edtPassword = (EditText) findViewById(R.id.edt_password);
         buttonLogin = (Button) findViewById(R.id.btn_login);
@@ -110,6 +105,11 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
     @Override
     public Context getContext() {
         return LoginActivity.this;
+    }
+
+    @Override
+    public void showErrorInternetCheckingIfExist() {
+        InternetChecking.checkInternet(getContext(), TAG);
     }
 
     @Override

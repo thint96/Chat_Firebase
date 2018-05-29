@@ -12,6 +12,8 @@ public interface BaseView {
 
     public Context getContext();
 
+    void showErrorInternetCheckingIfExist();
+
     public void showProgress();
 
     public void hideProgress();
