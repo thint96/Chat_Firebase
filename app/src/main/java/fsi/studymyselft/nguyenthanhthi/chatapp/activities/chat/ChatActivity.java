@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -38,6 +39,8 @@ import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
 
 public class ChatActivity extends AppCompatActivity
         implements ChatView, MessageInput.InputListener {
+
+    private final String TAG = "ChatActivity";
 
     private MessagesList messagesList; //UI - widget
     private MessageInput messageInput; //UI - widget
@@ -75,14 +78,15 @@ public class ChatActivity extends AppCompatActivity
 
         //get information of current user - myUser
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        String myAvatarUrl = "http://vi.fanpop.com/clubs/doraemon/answers/show/484361/post-pic-doraemon-with-nobita";
-        myUser = new User(currentUser.getUid(), currentUser.getEmail(), myAvatarUrl);
+        myUser = new User(currentUser.getUid(), currentUser.getEmail());
+        myUser.setOnline(true);
+
 
         //get information of other User from Intent
         String otherUserId = getIntent().getStringExtra("ID");
         String otherUserEmail = getIntent().getStringExtra("EMAIL");
-        String otherAvatarUrl = "http://www.socimage.net/user/doraemon_mychildhood/1757399948/1069505800034932735_1757399948";
-        otherUser = new User(otherUserId, otherUserEmail, otherAvatarUrl);
+        String otherUserAvatar = getIntent().getStringExtra("AVATAR");
+        otherUser = new User(otherUserId, otherUserEmail, otherUserAvatar);
 
         //set name of dialog and show UI
         getSupportActionBar().setTitle(otherUserEmail);
@@ -92,18 +96,6 @@ public class ChatActivity extends AppCompatActivity
         myDialog.addUserToListUsers(otherUser);
 
         initMessageAdapter();
-
-        //get reference of root database
-        database = FirebaseDatabase.getInstance();
-        rootReference = database.getReference();
-
-        //get reference of Dialog Database
-        if (rootReference.child("Dialogs") == null) {
-            rootReference.setValue("Dialogs");
-        }
-        dialogsReference = rootReference.child("Dialogs");
-
-        auth = FirebaseAuth.getInstance();
 
         showMessagesList();
 
@@ -157,6 +149,16 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public void showMessagesList() {
+        //get reference of root database
+        database = FirebaseDatabase.getInstance();
+        rootReference = database.getReference();
+
+        //get reference of Dialog Database
+        if (rootReference.child("Dialogs") == null) {
+            rootReference.setValue("Dialogs");
+        }
+        dialogsReference = rootReference.child("Dialogs");
+
         //set reference of my dialog in database and get messages in this dialog
         setReferenceToMyDialog();
 
@@ -193,10 +195,10 @@ public class ChatActivity extends AppCompatActivity
                         //check existence of my dialog
                         if (dialog.getName().equals(dialogName) || dialog.getName().equals(reverseDialogName)) {
                             if (dialog.getName().equals(reverseDialogName)) {
-                                myDialog.setName(reverseDialogName); //rename my dialog
+                                myDialog.setName(reverseDialogName); //rename of my dialog if necessary
                             }
-                            isMyDialogExist = true;
                             myDialog.setId(dialog.getId());
+                            isMyDialogExist = true;
                             break;
                         }
                     }
@@ -235,13 +237,20 @@ public class ChatActivity extends AppCompatActivity
                     messagesAdapter.delete(myDialog.getMessages());
                     myDialog.removeAllMessagesFromListMessages();
 
+                    Log.d(TAG, "Total count of messages in my dialog database = " + dataSnapshot.getChildrenCount());
+
                     for (DataSnapshot messageSnapshot : dataSnapshot.getChildren()) {
                         Message message = messageSnapshot.getValue(Message.class);
 
-                        System.out.println("Count of messages in database = " + dataSnapshot.getChildrenCount());
+                        //set avatar for other user to show UI
+                        if (currentUser.getUid().equals(message.getUser().getId())) {
+                            //if this message is belong to my user
+                            message.getUser().setAvatar("");
+                        } else { //if this message is belong to other user
+                            message.getUser().setAvatar(otherUser.getAvatar());
+                        }
 
                         myDialog.addMessageToListMessages(message);
-
                         messagesAdapter.addToStart(message, true);
                     }
                 }
