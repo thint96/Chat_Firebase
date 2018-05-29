@@ -17,8 +17,8 @@ public class User implements IUser {
     public User() {
     }
 
-    public User(String email) {
-        this.email = email;
+    public User(String id) {
+        this.id = id;
     }
 
     public User(String id, String email) {
@@ -40,6 +40,13 @@ public class User implements IUser {
         this.online = online;
     }
 
+    public User(String id, String email, String avatar, boolean online) {
+        this.id = id;
+        this.email = email;
+        this.avatar = avatar;
+        this.online = online;
+    }
+
     @Override
     public String getName() {
         return name;
@@ -48,6 +55,11 @@ public class User implements IUser {
     @Override
     public String getAvatar() {
         return avatar;
+    }
+
+    @Override
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public String getId() {

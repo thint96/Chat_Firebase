@@ -97,6 +97,7 @@ public class ListUserActivity extends AppCompatActivity implements ListUserView 
                 Intent intent = new Intent(getContext(), ChatActivity.class);
                 intent.putExtra("EMAIL", users.get(position).getEmail());
                 intent.putExtra("ID", users.get(position).getId());
+                intent.putExtra("AVATAR", users.get(position).getAvatar());
                 startActivity(intent);
             }
         });
@@ -156,7 +157,8 @@ public class ListUserActivity extends AppCompatActivity implements ListUserView 
     }
 
     private void updateNewUserToDatabase() {
-        User newUser = new User(currentUser.getUid().toString(), currentUser.getEmail().toString(), true);
+        String avatar = "http://pluspng.com/img-png/png-doraemon-doraemon-png-180.png";
+        User newUser = new User(currentUser.getUid().toString(), currentUser.getEmail().toString(), avatar);
         userReference.child(currentUser.getUid()).setValue(newUser);
     }
 
