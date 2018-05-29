@@ -2,9 +2,6 @@ package fsi.studymyselft.nguyenthanhthi.chatapp.data.model;
 
 import com.stfalcon.chatkit.commons.models.IUser;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Created by thanhthi on 04/05/2018.
  */
@@ -20,8 +17,8 @@ public class User implements IUser {
     public User() {
     }
 
-    public User(String email) {
-        this.email = email;
+    public User(String id) {
+        this.id = id;
     }
 
     public User(String id, String email) {
@@ -30,9 +27,23 @@ public class User implements IUser {
         this.online = true;
     }
 
+    public User(String id, String email, String avatar) {
+        this.id = id;
+        this.email = email;
+        this.avatar = avatar;
+        this.online = true;
+    }
+
     public User(String id, String email, boolean online) {
         this.id = id;
         this.email = email;
+        this.online = online;
+    }
+
+    public User(String id, String email, String avatar, boolean online) {
+        this.id = id;
+        this.email = email;
+        this.avatar = avatar;
         this.online = online;
     }
 
@@ -44,6 +55,11 @@ public class User implements IUser {
     @Override
     public String getAvatar() {
         return avatar;
+    }
+
+    @Override
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public String getId() {

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context="fsi.studymyselft.nguyenthanhthi.chatapp.activities.ChatActivity">
+    tools:context="fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat.ChatActivity">
 
     <com.stfalcon.chatkit.messages.MessagesList
         android:id="@+id/messagesList"

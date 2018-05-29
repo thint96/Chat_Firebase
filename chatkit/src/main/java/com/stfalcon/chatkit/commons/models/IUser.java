@@ -41,4 +41,6 @@ public interface IUser {
      * @return the user's avatar image url
      * */
     String getAvatar();
+
+    void setAvatar(String avatar);
 }

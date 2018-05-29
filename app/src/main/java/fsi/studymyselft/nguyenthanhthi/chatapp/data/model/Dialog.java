@@ -34,8 +34,9 @@ public class Dialog {
         this.name = name;
     }
 
-    //----------------------------------
-    //messages
+    /**
+     * messages
+     */
 
     public ArrayList<Message> getMessages() {
         return messages;
@@ -57,8 +58,9 @@ public class Dialog {
         this.messages.clear();
     }
 
-    //----------------------------------
-    //members
+    /**
+     * members
+     */
 
     public ArrayList<User> getMembers() {
         return members;
