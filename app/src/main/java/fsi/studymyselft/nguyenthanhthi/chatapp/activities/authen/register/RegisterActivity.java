@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -23,6 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.login.LoginActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.listUser.ListUserActivity;
+import fsi.studymyselft.nguyenthanhthi.chatapp.other.InternetChecking;
 
 public class RegisterActivity extends AppCompatActivity implements RegisterView, View.OnClickListener {
 
@@ -66,6 +66,11 @@ public class RegisterActivity extends AppCompatActivity implements RegisterView,
     @Override
     public Context getContext() {
         return RegisterActivity.this;
+    }
+
+    @Override
+    public void showErrorInternetCheckingIfExist() {
+        InternetChecking.checkInternet(getContext(), TAG);
     }
 
     @Override

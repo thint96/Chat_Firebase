@@ -33,9 +33,11 @@ import fsi.studymyselft.nguyenthanhthi.chatapp.R;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.login.LoginActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat.holders.CustomIncomingTextMessageViewHolder;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat.holders.CustomOutcomingTextMessageViewHolder;
+import fsi.studymyselft.nguyenthanhthi.chatapp.activities.listUser.ListUserActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.Dialog;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.Message;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
+import fsi.studymyselft.nguyenthanhthi.chatapp.other.InternetChecking;
 
 public class ChatActivity extends AppCompatActivity
         implements ChatView, MessageInput.InputListener {
@@ -71,6 +73,8 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public void bindViews() {
+        showErrorInternetCheckingIfExist();
+
         messagesList = (MessagesList) findViewById(R.id.messagesList);
         messageInput = (MessageInput) findViewById(R.id.input);
 
@@ -91,6 +95,9 @@ public class ChatActivity extends AppCompatActivity
         //set name of dialog and show UI
         getSupportActionBar().setTitle(otherUserEmail);
 
+        //set back button in menu bar
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         //update information users to myDialog
         myDialog.addUserToListUsers(myUser);
         myDialog.addUserToListUsers(otherUser);
@@ -99,13 +106,18 @@ public class ChatActivity extends AppCompatActivity
 
         showMessagesList();
 
-        //validate and send message
+        //validate and send a new message
         messageInput.setInputListener(this);
     }
 
     @Override
     public Context getContext() {
         return ChatActivity.this;
+    }
+
+    @Override
+    public void showErrorInternetCheckingIfExist() {
+        InternetChecking.checkInternet(getContext(), TAG);
     }
 
     @Override
@@ -129,12 +141,22 @@ public class ChatActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.logout) {
             logout();
-        } else if (item.getItemId() == R.id.copy) {
-            copyToClipBoard();
-        } else if (item.getItemId() == R.id.delete) {
-            deleteMessage();
+            return true;
         }
-        return true;
+        else if (item.getItemId() == R.id.copy) {
+            copyToClipBoard();
+            return true;
+        }
+        else if (item.getItemId() == R.id.delete) {
+            deleteMessage();
+            return true;
+        }
+        else if (item.getItemId() == android.R.id.home) {
+            navigateToListUser();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -163,6 +185,13 @@ public class ChatActivity extends AppCompatActivity
         setReferenceToMyDialog();
 
         messagesList.setAdapter(messagesAdapter);
+    }
+
+    @Override
+    public void navigateToListUser() {
+        Intent intent = new Intent(getContext(), ListUserActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
     @Override

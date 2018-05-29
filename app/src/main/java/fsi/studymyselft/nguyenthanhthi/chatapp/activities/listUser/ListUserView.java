@@ -8,7 +8,5 @@ import fsi.studymyselft.nguyenthanhthi.chatapp.activities.BaseMainView;
 
 public interface ListUserView extends BaseMainView {
 
-    void showErrorInternetCheckingIfExist();
-
     void showUsersList();
 }
