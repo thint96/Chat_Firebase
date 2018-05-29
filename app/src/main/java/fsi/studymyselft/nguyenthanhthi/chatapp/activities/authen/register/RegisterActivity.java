@@ -52,6 +52,8 @@ public class RegisterActivity extends AppCompatActivity implements RegisterView,
 
     @Override
     public void bindViews() {
+        showErrorInternetCheckingIfExist();
+
         edtEmail = (EditText) findViewById(R.id.edt_email);
         edtPassword = (EditText) findViewById(R.id.edt_password);
         edtPassword2 = (EditText) findViewById(R.id.edt_password_again);
@@ -76,18 +78,11 @@ public class RegisterActivity extends AppCompatActivity implements RegisterView,
     @Override
     public void showProgress() {
         progressBar.setVisibility(View.VISIBLE);
-
-        //disable the user interaction
-//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-//                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
 
     @Override
     public void hideProgress() {
         progressBar.setVisibility(View.GONE);
-
-        //get user interaction back
-//        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
 
     @Override

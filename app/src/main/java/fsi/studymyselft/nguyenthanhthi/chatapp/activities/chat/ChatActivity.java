@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -29,6 +30,10 @@ import com.stfalcon.chatkit.messages.MessageInput;
 import com.stfalcon.chatkit.messages.MessagesList;
 import com.stfalcon.chatkit.messages.MessagesListAdapter;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Locale;
+
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.login.LoginActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat.holders.CustomIncomingTextMessageViewHolder;
@@ -42,7 +47,7 @@ import fsi.studymyselft.nguyenthanhthi.chatapp.other.InternetChecking;
 public class ChatActivity extends AppCompatActivity
         implements ChatView, MessageInput.InputListener {
 
-    private final String TAG = "ChatActivity";
+    private static final String TAG = "ChatActivity";
 
     private MessagesList messagesList; //UI - widget
     private MessageInput messageInput; //UI - widget
@@ -95,7 +100,7 @@ public class ChatActivity extends AppCompatActivity
         //set name of dialog and show UI
         getSupportActionBar().setTitle(otherUserEmail);
 
-        //set back button in menu bar
+        //set back button in tool bar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //update information users to myDialog
@@ -212,7 +217,7 @@ public class ChatActivity extends AppCompatActivity
         final String reverseDialogName = (otherUser.getId() + "|" + myUser.getId());
         myDialog.setName(dialogName);
 
-        dialogsReference.addValueEventListener(new ValueEventListener() {
+        dialogsReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 boolean isMyDialogExist = false;
@@ -259,7 +264,7 @@ public class ChatActivity extends AppCompatActivity
         }
         messagesReference = myDialogReference.child("Messages");
 
-        messagesReference.addValueEventListener(new ValueEventListener() {
+        messagesReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -325,6 +330,11 @@ public class ChatActivity extends AppCompatActivity
         String key = messagesReference.push().getKey();
         newMessage = new Message(key, messageText, myUser);
         messagesReference.child(key).setValue(newMessage);
+
+        //add new message into message adapter to show on list message
+        myDialog.addMessageToListMessages(newMessage);
+        messagesAdapter.updateNewMessage(newMessage);
+        messagesAdapter.notifyDataSetChanged();
 
         return true;
     }
