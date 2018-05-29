@@ -15,4 +15,6 @@ public interface ChatView extends BaseMainView {
     void initMessageAdapter();
 
     void showMessagesList();
+
+    void navigateToListUser();
 }
