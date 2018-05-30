@@ -41,7 +41,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
     private final String TAG = "LoginActivity";
 
     private EditText edtEmail, edtPassword;
-    private Button buttonLogin, buttonAutoLogin;
+    private Button buttonLogin;
     private TextView goToRegister;
     private ProgressDialog progressDialog;
 
@@ -57,17 +57,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        //check to auto-login
-        checkUserHaveSignedIn();
-
-        userList = new ArrayList<>();
-
-        database = FirebaseDatabase.getInstance();
-        rootReference = database.getReference();
-        usersReference = rootReference.child("Users");
-
-        pushDataUsersToList();
 
         bindViews();
     }
@@ -91,14 +80,23 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
     public void bindViews() {
         showErrorInternetCheckingIfExist();
 
+        //check to auto-login
+        checkUserHasSignedIn();
+
+        userList = new ArrayList<>();
+
+        database = FirebaseDatabase.getInstance();
+        rootReference = database.getReference();
+        usersReference = rootReference.child("Users");
+
+        pushDataUsersToList();
+
         edtEmail = (EditText) findViewById(R.id.edt_email);
         edtPassword = (EditText) findViewById(R.id.edt_password);
         buttonLogin = (Button) findViewById(R.id.btn_login);
-        buttonAutoLogin = (Button) findViewById(R.id.btn_auto_login);
         goToRegister = (TextView) findViewById(R.id.goToRegister);
 
         buttonLogin.setOnClickListener(this);
-        buttonAutoLogin.setOnClickListener(this);
         goToRegister.setOnClickListener(this);
     }
 
@@ -263,7 +261,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
      * check user have login but don't logout
      * if true then user mustn't login
      */
-    private void checkUserHaveSignedIn() {
+    private void checkUserHasSignedIn() {
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {

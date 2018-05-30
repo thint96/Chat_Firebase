@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">ChatApp</string>
     <string name="login_failed">Login failed!</string>
-    <string name="title_activity_login">Sign in</string>
+    <string name="title_activity_login">Log in</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -17,8 +17,10 @@
     </string>
 
     <string name="hint_enter_a_message">Type a message…</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
     <string name="enter_email">Enter email</string>
     <string name="enter_password">Enter password</string>
     <string name="login">Login</string>
-    <string name="go_to_sign_up">Don\'t have an account? Sign up!</string>
+    <string name="go_to_sign_up">No account yet? Create one</string>
 </resources>
