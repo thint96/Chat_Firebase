@@ -209,9 +209,6 @@ public class MessagesListAdapter<MESSAGE extends IMessage>
         Wrapper<MESSAGE> element = new Wrapper<>(message);
         items.add(0, element);
         notifyItemRangeInserted(0, 1);
-        if (layoutManager != null) {    //scroll to new message if necessary
-            layoutManager.scrollToPosition(0);
-        }
     }
 
     /**
