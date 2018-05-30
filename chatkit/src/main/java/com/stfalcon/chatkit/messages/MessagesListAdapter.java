@@ -200,6 +200,7 @@ public class MessagesListAdapter<MESSAGE extends IMessage>
     }
 
     //my adding code
+
     /**
      * update new message to end of list message
      * @param message new message to add to list view message
