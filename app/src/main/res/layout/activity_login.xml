@@ -5,13 +5,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/color_background_authen"
+    android:background="@color/green"
     tools:context=".activities.authen.login.LoginActivity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:paddingBottom="20dp"
+        android:text="@string/title_activity_login"
+        android:textColor="@color/white"
+        android:textSize="35dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/main_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
 
     <LinearLayout
         android:id="@+id/main_layout"
-        android:layout_width="0dp"
-        android:layout_height="322dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
@@ -24,27 +38,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:gravity="center"
-            android:text="@string/title_activity_login"
-            android:textColor="@color/white"
-            android:textSize="35dp"
-            android:textStyle="bold"/>
-
         <!--email-->
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColorHint="@color/white"
+            app:errorEnabled="true"
             app:hintTextAppearance="@color/white">
 
             <android.support.design.widget.TextInputEditText
                 android:id="@+id/edt_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/ic_email"
                 android:hint="@string/email"
                 android:inputType="textEmailAddress"/>
         </android.support.design.widget.TextInputLayout>
@@ -55,6 +61,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:textColorHint="@color/white"
+            app:errorEnabled="true"
             app:hintTextAppearance="@color/white"
             app:passwordToggleEnabled="true"
             app:passwordToggleTint="@color/color_background_button_login">
@@ -63,6 +70,7 @@
                 android:id="@+id/edt_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/ic_password"
                 android:hint="@string/password"
                 android:inputType="textPassword"/>
         </android.support.design.widget.TextInputLayout>

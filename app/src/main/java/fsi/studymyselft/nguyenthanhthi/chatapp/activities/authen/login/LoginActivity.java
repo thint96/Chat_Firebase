@@ -78,6 +78,8 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
 
     @Override
     public void bindViews() {
+        getSupportActionBar().setTitle("");
+
         showErrorInternetCheckingIfExist();
 
         //check to auto-login
