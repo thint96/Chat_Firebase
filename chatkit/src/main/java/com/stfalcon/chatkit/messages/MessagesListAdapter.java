@@ -199,6 +199,21 @@ public class MessagesListAdapter<MESSAGE extends IMessage>
         }
     }
 
+    //my adding code
+
+    /**
+     * update new message to end of list message
+     * @param message new message to add to list view message
+     */
+    public void updateNewMessage(MESSAGE message) {
+        Wrapper<MESSAGE> element = new Wrapper<>(message);
+        items.add(0, element);
+        notifyItemRangeInserted(0, 1);
+        if (layoutManager != null) {    //scroll to new message if necessary
+            layoutManager.scrollToPosition(0);
+        }
+    }
+
     /**
      * Deletes message.
      *
@@ -481,7 +496,7 @@ public class MessagesListAdapter<MESSAGE extends IMessage>
             Date previousPositionDate = ((MESSAGE) items.get(position).item).getCreatedAt();
             return DateFormatter.isSameDay(dateToCompare, previousPositionDate);
         } else return false;
-    }
+}
 
     @SuppressWarnings("unchecked")
     private boolean isPreviousSameAuthor(String id, int position) {

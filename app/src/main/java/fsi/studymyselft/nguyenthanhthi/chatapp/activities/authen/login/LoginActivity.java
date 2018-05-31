@@ -6,7 +6,10 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -40,8 +43,9 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
 
     private final String TAG = "LoginActivity";
 
-    private EditText edtEmail, edtPassword;
-    private Button buttonLogin, buttonAutoLogin;
+    private TextInputLayout textInputLayoutEmail, textInputLayoutPassword;
+    private TextInputEditText edtEmail, edtPassword;
+    private Button buttonLogin;
     private TextView goToRegister;
     private ProgressDialog progressDialog;
 
@@ -57,17 +61,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        //check to auto-login
-        checkUserHaveSignedIn();
-
-        userList = new ArrayList<>();
-
-        database = FirebaseDatabase.getInstance();
-        rootReference = database.getReference();
-        usersReference = rootReference.child("Users");
-
-        pushDataUsersToList();
 
         bindViews();
     }
@@ -89,16 +82,31 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
 
     @Override
     public void bindViews() {
+        getSupportActionBar().setTitle("");
+
         showErrorInternetCheckingIfExist();
 
-        edtEmail = (EditText) findViewById(R.id.edt_email);
-        edtPassword = (EditText) findViewById(R.id.edt_password);
+        //check to auto-login
+        checkUserHasSignedIn();
+
+        userList = new ArrayList<>();
+
+        database = FirebaseDatabase.getInstance();
+        rootReference = database.getReference();
+        usersReference = rootReference.child("Users");
+
+        pushDataUsersToList();
+
+        textInputLayoutEmail = (TextInputLayout) findViewById(R.id.til_email);
+        textInputLayoutPassword = (TextInputLayout) findViewById(R.id.til_password);
+
+        edtEmail = (TextInputEditText) findViewById(R.id.edt_email);
+        edtPassword = (TextInputEditText) findViewById(R.id.edt_password);
+
         buttonLogin = (Button) findViewById(R.id.btn_login);
-        buttonAutoLogin = (Button) findViewById(R.id.btn_auto_login);
         goToRegister = (TextView) findViewById(R.id.goToRegister);
 
         buttonLogin.setOnClickListener(this);
-        buttonAutoLogin.setOnClickListener(this);
         goToRegister.setOnClickListener(this);
     }
 
@@ -127,10 +135,10 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
         String email = edtEmail.getText().toString().trim();
 
         if (email.equals("") || TextUtils.isEmpty(email)) { //the string is null or 0-length
-            edtEmail.setError("Email can't be blank!");
+            textInputLayoutEmail.setError("Email can't be blank!");
         }
         else if (!email.contains("@")) {
-            edtEmail.setError("Invalid email!");
+            textInputLayoutEmail.setError("Invalid email!");
         }
     }
 
@@ -139,10 +147,11 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
         String password = edtPassword.getText().toString().trim();
 
         if (password.equals("") || TextUtils.isEmpty(password)) {
-            edtPassword.setError("Password can't be blank!");
+            textInputLayoutPassword.setError("Password can't be blank!");
         }
         else if (password.length() < 6) {
-            edtPassword.setError("Password must have min 6 characters");
+            textInputLayoutPassword.setError("Password must have min 6 characters");
+
         }
     }
 
@@ -197,11 +206,30 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
         String inputEmail = edtEmail.getText().toString().trim();
         String inputPass = edtPassword.getText().toString().trim();
 
+        //set default email and password
         if (inputEmail.length() == 0 && inputPass.length() == 0) {
             setUsernameError();
             setPasswordError();
+
             edtEmail.setText("q@gmail.com");
             edtPassword.setText("123456");
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        int timeSleep = 0;
+                        int totalSleep = 4000;
+                        do {
+                            Thread.sleep(100);
+                            timeSleep += 100;
+                        } while (timeSleep < totalSleep);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
             login();
         }
 
@@ -263,7 +291,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
      * check user have login but don't logout
      * if true then user mustn't login
      */
-    private void checkUserHaveSignedIn() {
+    private void checkUserHasSignedIn() {
         authStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {

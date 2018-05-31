@@ -21,4 +21,8 @@
     <color name="green_dark">#2da346</color>
     <color name="red">#e94f4f</color>
     <color name="brown">#4e342e</color>
+
+    <color name="color_background_authen">#5ebd56</color>
+    <color name="color_background_chat">#f4f4f4</color>
+    <color name="color_background_button_login">#2e622d</color>
 </resources>
