@@ -13,7 +13,7 @@ public interface RegisterView extends BaseView, AuthView {
 
     public void setPasswordError();
 
-    public void navigateToSignIn();
+    public void navigateToLogIn();
 
     public void navigateToHome();
 
