@@ -24,4 +24,7 @@
     <string name="login">Login</string>
     <string name="done">Done</string>
     <string name="go_to_sign_up">No account yet? Create one</string>
+    <string name="create_an_account">Create an account</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="register">Register</string>
 </resources>
