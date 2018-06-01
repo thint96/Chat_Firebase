@@ -1,20 +1,7 @@
 <resources>
     <string name="app_name">ChatApp</string>
     <string name="login_failed">Login failed!</string>
-    <string name="title_activity_login">Chat Me</string>
-
-    <!-- Strings related to login -->
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password (optional)</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
-    <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
+    <string name="title_activity_authen">Chat Me</string>
 
     <string name="hint_enter_a_message">Type a message…</string>
     <string name="email">Email</string>
@@ -27,4 +14,17 @@
     <string name="create_an_account">Create an account</string>
     <string name="confirm_password">Confirm password</string>
     <string name="register">Register</string>
+    <string name="go_to_login">Already a member? Login</string>
+    <string name="welcome">Welcome</string>
+    <string name="register_successfully">Register successfully!</string>
+    <string name="register_failed">Register failed!</string>
+    <string name="email_can_not_be_blank">Email can\'t be blank!</string>
+    <string name="invalid_email">Invalid email!</string>
+    <string name="password_can_not_be_blank">Password can\'t be blank!</string>
+    <string name="confirm_password_can_not_be_blank">Confirm Password can\'t be blank!</string>
+    <string name="password_is_not_duplicated">Password is not duplicated!</string>
+    <string name="please_wait">Please wait...</string>
+    <string name="login_successfully">Login successfully!</string>
+    <string name="password_must_have_min_6_characters">Password must have min 6 characters</string>
+    <string name="auth_error">Invalid username and password combination!</string>
 </resources>
