@@ -7,7 +7,7 @@
     <color name="cornflower_blue">#6274e2</color>
     <color name="cornflower_blue_dark">#303F9F</color>
     <color name="cornflower_blue_darkest">#2d3a93</color>
-    <color name="gray">#ebebeb</color>
+    <color name="gray">#ccc</color>
     <color name="gray_light">#e8e8e8</color>
     <color name="gray_transparent">#a6efefef</color>
     <color name="gray_dark">#858585</color>
@@ -21,4 +21,10 @@
     <color name="green_dark">#2da346</color>
     <color name="red">#e94f4f</color>
     <color name="brown">#4e342e</color>
+
+    <color name="color_background_authen">#5ebd56</color>
+    <color name="color_background_chat">#f4f4f4</color>
+    <color name="green_moss_dark">#2e622d</color>
+
+    <color name="example">#fcff4a</color>
 </resources>
