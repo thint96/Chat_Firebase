@@ -49,11 +49,13 @@ public class RegisterActivity extends AppCompatActivity implements RegisterView,
 
     @Override
     public void showAuthError() {
-        Toast.makeText(getContext(), "Invalid username and password combination.", Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), R.string.auth_error, Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void bindViews() {
+        getSupportActionBar().hide();
+
         showErrorInternetCheckingIfExist();
 
         textInputLayoutEmail = (TextInputLayout) findViewById(R.id.til_email);
@@ -83,7 +85,7 @@ public class RegisterActivity extends AppCompatActivity implements RegisterView,
 
     @Override
     public void showProgress() {
-        progressDialog = ProgressDialog.show(getContext(), "Registering", "Please wait...");
+        progressDialog = ProgressDialog.show(getContext(), getString(R.string.register) + "ing", getString(R.string.please_wait));
     }
 
     @Override
@@ -96,10 +98,10 @@ public class RegisterActivity extends AppCompatActivity implements RegisterView,
         String email = edtEmail.getText().toString().trim();
 
         if (email.equals("") || TextUtils.isEmpty(email)) { //the string is null or 0-length
-            textInputLayoutEmail.setError("Email can't be blank!");
+            textInputLayoutEmail.setError(getString(R.string.email_can_not_be_blank));
         }
         else if (!email.contains("@")) {
-            textInputLayoutEmail.setError("Invalid email!");
+            textInputLayoutEmail.setError(getString(R.string.invalid_email));
         }
     }
 
@@ -110,18 +112,23 @@ public class RegisterActivity extends AppCompatActivity implements RegisterView,
 
         boolean isPasswordFieldBlank = false;
 
+        //check password
         if (password.equals("") || TextUtils.isEmpty(password)) {
-            textInputLayoutPassword.setError("Password can't be blank!");
+            textInputLayoutPassword.setError(getString(R.string.password_can_not_be_blank));
             isPasswordFieldBlank = true;
         }
+        else if (password.length() < 6) {
+            textInputLayoutPassword.setError(getString(R.string.password_must_have_min_6_characters));
+        }
 
+        //check confirm password
         if (confirmPassword.equals("") || TextUtils.isEmpty(confirmPassword)) {
-            textInputLayoutConfirmPassword.setError("Confirm Password can't be blank!");
+            textInputLayoutConfirmPassword.setError(getString(R.string.confirm_password_can_not_be_blank));
             isPasswordFieldBlank = true;
         }
 
         if (!confirmPassword.equals(password) && !isPasswordFieldBlank) {
-            textInputLayoutConfirmPassword.setError("Password is not duplicated!");
+            textInputLayoutConfirmPassword.setError(getString(R.string.password_is_not_duplicated));
         }
     }
 
@@ -187,7 +194,10 @@ public class RegisterActivity extends AppCompatActivity implements RegisterView,
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "createUserWithEmailPassword:success");
-                            Toast.makeText(getContext(), "Register successfully!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), R.string.register_successfully, Toast.LENGTH_SHORT).show();
+
+                            //show greeting
+                            Toast.makeText(getContext(), getString(R.string.welcome) + " " + email.toString(), Toast.LENGTH_SHORT).show();
 
                             //go to List User Activity
                             startActivity(new Intent(getContext(), ListUserActivity.class));
@@ -196,7 +206,7 @@ public class RegisterActivity extends AppCompatActivity implements RegisterView,
                         }
                         else {
                             Log.w(TAG, "createUserEmailPassword:failure", task.getException());
-                            Toast.makeText(getContext(), "Register failed!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), R.string.register_failed, Toast.LENGTH_SHORT).show();
 
                             showAuthError();
                             hideProgress();
