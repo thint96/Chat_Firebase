@@ -4,17 +4,12 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -27,7 +22,6 @@ import java.util.ArrayList;
 
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.BaseMainActivity;
-import fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.login.LoginActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat.ChatActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.adapter.ListUserAdapter;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
@@ -133,7 +127,7 @@ public class ListUserActivity extends BaseMainActivity implements ListUserView {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         this.menu = menu;
-        getMenuInflater().inflate(R.menu.main_menu, menu);
+        getMenuInflater().inflate(R.menu.edit_menu, menu);
         return true;
     }
 
