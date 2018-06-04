@@ -55,6 +55,6 @@
         app:inputButtonDefaultIconDisabledColor="@color/white60"
         app:inputCursorDrawable="@drawable/shape_custom_cursor"
         app:inputHint="@string/hint_enter_a_message"
-        app:showAttachmentButton="true"/>
+        app:showAttachmentButton="false"/>
 
 </RelativeLayout>

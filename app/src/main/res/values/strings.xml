@@ -27,4 +27,5 @@
     <string name="login_successfully">Login successfully!</string>
     <string name="password_must_have_min_6_characters">Password must have min 6 characters</string>
     <string name="auth_error">Invalid username and password combination!</string>
+    <string name="menu">menu</string>
 </resources>
