@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -30,12 +29,7 @@ import com.stfalcon.chatkit.messages.MessageInput;
 import com.stfalcon.chatkit.messages.MessagesList;
 import com.stfalcon.chatkit.messages.MessagesListAdapter;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Locale;
-
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
-import fsi.studymyselft.nguyenthanhthi.chatapp.activities.BaseMainActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.login.LoginActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat.holders.CustomIncomingTextMessageViewHolder;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat.holders.CustomOutcomingTextMessageViewHolder;
@@ -199,7 +193,7 @@ public class ChatActivity extends AppCompatActivity
         final String reverseDialogName = (otherUser.getId() + "|" + myUser.getId());
         myDialog.setName(dialogName);
 
-        dialogsReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        dialogsReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 boolean isMyDialogExist = false;
@@ -246,29 +240,34 @@ public class ChatActivity extends AppCompatActivity
         }
         messagesReference = myDialogReference.child("Messages");
 
-        messagesReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        messagesReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    messagesAdapter.delete(myDialog.getMessages());
-                    myDialog.removeAllMessagesFromListMessages();
-
                     Log.d(TAG, "Total count of messages in my dialog database = " + dataSnapshot.getChildrenCount());
+                    Log.d(TAG, "Total count of messages in messageAdapter = " + messagesAdapter.getItemCount());
+                    Log.d(TAG, "Total count of messages in my Dialog = " + myDialog.getMessages().size());
 
-                    for (DataSnapshot messageSnapshot : dataSnapshot.getChildren()) {
-                        Message message = messageSnapshot.getValue(Message.class);
+                    if (messagesAdapter.getItemCount() != dataSnapshot.getChildrenCount()) {
+                        messagesAdapter.delete(myDialog.getMessages());
+                        myDialog.removeAllMessagesFromListMessages();
+                        for (DataSnapshot messageSnapshot : dataSnapshot.getChildren()) {
+                            Message message = messageSnapshot.getValue(Message.class);
 
-                        //set avatar for other user to show UI
-                        if (currentUser.getUid().equals(message.getUser().getId())) {
-                            //if this message is belong to my user
-                            message.getUser().setAvatar("");
-                        } else { //if this message is belong to other user
-                            message.getUser().setAvatar(otherUser.getAvatar());
+                            //set avatar for other user to show UI
+                            if (currentUser.getUid().equals(message.getUser().getId())) {
+                                //if this message is belong to my user
+                                message.getUser().setAvatar("");
+                            } else { //if this message is belong to other user
+                                message.getUser().setAvatar(otherUser.getAvatar());
+                            }
+
+                            myDialog.addMessageToListMessages(message);
+                            messagesAdapter.updateNewMessage(message);
+                            messagesAdapter.notifyDataSetChanged();
                         }
-
-                        myDialog.addMessageToListMessages(message);
-                        messagesAdapter.addToStart(message, true);
                     }
+
                 }
             }
 
@@ -313,24 +312,6 @@ public class ChatActivity extends AppCompatActivity
         newMessage = new Message(key, messageText, myUser);
         messagesReference.child(key).setValue(newMessage);
 
-        //add new message into message adapter to show on list message
-        myDialog.addMessageToListMessages(newMessage);
-        messagesAdapter.updateNewMessage(newMessage);
-        messagesAdapter.notifyDataSetChanged();
-
         return true;
-    }
-
-    @Override
-    public void logout() {
-        AuthUI.getInstance()
-                .signOut(this)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        startActivity(new Intent(getContext(), LoginActivity.class));
-                        finish();
-                    }
-                });
     }
 }
