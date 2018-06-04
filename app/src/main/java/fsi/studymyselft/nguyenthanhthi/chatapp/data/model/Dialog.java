@@ -1,17 +1,24 @@
 package fsi.studymyselft.nguyenthanhthi.chatapp.data.model;
 
+import com.stfalcon.chatkit.commons.models.IDialog;
+import com.stfalcon.chatkit.commons.models.IUser;
+
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by thanhthi on 21/05/2018.
  */
 
-public class Dialog {
+public class Dialog implements IDialog <Message> {
 
     private String id;
     private String name;
+    private String photo;
     private ArrayList<Message> messages;
     private ArrayList<User> members;
+    private Message lastMessage;
+    private int unreadCount;
 
     public Dialog() {
         messages = new ArrayList<>();
@@ -20,6 +27,36 @@ public class Dialog {
 
     public String getId() {
         return id;
+    }
+
+    @Override
+    public String getDialogPhoto() {
+        return photo;
+    }
+
+    @Override
+    public String getDialogName() {
+        return name;
+    }
+
+    @Override
+    public List<User> getUsers() {
+        return members;
+    }
+
+    @Override
+    public Message getLastMessage() {
+        return lastMessage;
+    }
+
+    @Override
+    public void setLastMessage(Message message) {
+        this.lastMessage = lastMessage;
+    }
+
+    @Override
+    public int getUnreadCount() {
+        return 0;
     }
 
     public void setId(String id) {

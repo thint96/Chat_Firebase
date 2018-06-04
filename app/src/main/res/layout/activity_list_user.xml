@@ -7,10 +7,9 @@
     android:orientation="vertical"
     tools:context="fsi.studymyselft.nguyenthanhthi.chatapp.activities.listUser.ListUserActivity">
 
-    <ListView
-        android:id="@+id/lvUsers"
+    <com.stfalcon.chatkit.dialogs.DialogsList
+        android:id="@+id/dialogs_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="5dp"/>
+        android:layout_height="match_parent"/>
 
 </LinearLayout>
