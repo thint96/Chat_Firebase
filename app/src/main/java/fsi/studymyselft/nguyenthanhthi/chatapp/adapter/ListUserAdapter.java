@@ -1,6 +1,7 @@
 package fsi.studymyselft.nguyenthanhthi.chatapp.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
@@ -60,8 +62,15 @@ public class ListUserAdapter extends BaseAdapter {
         email = convertView.findViewById(R.id.txtEmail);
 
         avatar.setText(users.get(position).getEmail().substring(0, 1).toUpperCase());
+        avatar.setBackgroundColor(getRandomColor());
         email.setText(users.get(position).getEmail());
 
         return convertView;
+    }
+
+    private int getRandomColor() {
+        Random random = new Random();
+        int color = Color.argb(155, random.nextInt(256), random.nextInt(256), random.nextInt(256));
+        return color;
     }
 }
