@@ -26,15 +26,17 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
+import fsi.studymyselft.nguyenthanhthi.chatapp.activities.BaseMainActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.login.LoginActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat.ChatActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.adapter.ListUserAdapter;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
 import fsi.studymyselft.nguyenthanhthi.chatapp.other.InternetChecking;
 
-public class ListUserActivity extends AppCompatActivity implements ListUserView {
+public class ListUserActivity extends BaseMainActivity implements ListUserView {
 
-    private final String TAG = "ListUserActivity";
+    private static final String TAG = "ListUserActivity";
+    private static final String USERS_DATABASE = "Users";
 
     private ListView lvUsers;
     private ArrayList<User> users;
@@ -66,29 +68,7 @@ public class ListUserActivity extends AppCompatActivity implements ListUserView 
 
         showProgress();
 
-        users = new ArrayList<>();
-
-        database = FirebaseDatabase.getInstance();
-        rootReference = database.getReference();
-        if (rootReference.child("Users") == null) rootReference.setValue("Users");
-        userReference = rootReference.child("Users");
-        currentUser = FirebaseAuth.getInstance().getCurrentUser();
-
-        setTitle("List Users - " + currentUser.getEmail());
-
-        auth = FirebaseAuth.getInstance();
-
-        lvUsers = (ListView) findViewById(R.id.lvUsers);
-
-        //update database users if current user have already registered
-        updateNewUserToDatabase();
-
-        //get all users from database to list "users"
-        pushDataUsersToListUsers();
-
-        adapter = new ListUserAdapter(getContext(), users);
-        lvUsers.setAdapter(adapter);
-//        showUsersList();
+        showUsersList();
 
         hideProgress();
 
@@ -111,7 +91,7 @@ public class ListUserActivity extends AppCompatActivity implements ListUserView 
 
     @Override
     public void showProgress() {
-        progressDialog = ProgressDialog.show(getContext(), "Loading list users", "Please wait...");
+        progressDialog = ProgressDialog.show(getContext(), "Loading list users", getString(R.string.please_wait));
     }
 
     @Override
@@ -126,7 +106,28 @@ public class ListUserActivity extends AppCompatActivity implements ListUserView 
 
     @Override
     public void showUsersList() {
+        users = new ArrayList<>();
 
+        database = FirebaseDatabase.getInstance();
+        rootReference = database.getReference();
+        if (rootReference.child(USERS_DATABASE) == null) rootReference.setValue(USERS_DATABASE);
+        userReference = rootReference.child(USERS_DATABASE);
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        setTitle("List members - " + currentUser.getEmail());
+
+        auth = FirebaseAuth.getInstance();
+
+        lvUsers = (ListView) findViewById(R.id.lvUsers);
+
+        //update database users if current user have already registered
+        updateNewUserToDatabase();
+
+        //get all users from database to list "users"
+        pushDataUsersToListUsers();
+
+        adapter = new ListUserAdapter(getContext(), users);
+        lvUsers.setAdapter(adapter);
     }
 
     @Override
@@ -138,23 +139,7 @@ public class ListUserActivity extends AppCompatActivity implements ListUserView 
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.logout) {
-            logout();
-        }
         return true;
-    }
-
-    @Override
-    public void logout() {
-        AuthUI.getInstance()
-                .signOut(this)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        startActivity(new Intent(getContext(), LoginActivity.class));
-                        finish();
-                    }
-                });
     }
 
     private void updateNewUserToDatabase() {

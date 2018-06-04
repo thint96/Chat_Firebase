@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
+import fsi.studymyselft.nguyenthanhthi.chatapp.activities.BaseMainActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.login.LoginActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat.holders.CustomIncomingTextMessageViewHolder;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat.holders.CustomOutcomingTextMessageViewHolder;
@@ -99,8 +100,6 @@ public class ChatActivity extends AppCompatActivity
 
         //set name of dialog and show UI
         getSupportActionBar().setTitle(otherUserEmail);
-
-        //set back button in tool bar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //update information users to myDialog
@@ -127,7 +126,7 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public void showProgress() {
-        progressDialog = ProgressDialog.show(getContext(), "Loading list users", "Please wait...");
+        progressDialog = ProgressDialog.show(getContext(), "Loading list users", getString(R.string.please_wait));
     }
 
     @Override
@@ -144,11 +143,7 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.logout) {
-            logout();
-            return true;
-        }
-        else if (item.getItemId() == R.id.copy) {
+        if (item.getItemId() == R.id.copy) {
             copyToClipBoard();
             return true;
         }
@@ -197,19 +192,6 @@ public class ChatActivity extends AppCompatActivity
         Intent intent = new Intent(getContext(), ListUserActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
-    }
-
-    @Override
-    public void logout() {
-        AuthUI.getInstance()
-                .signOut(this)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        startActivity(new Intent(getContext(), LoginActivity.class));
-                        finish();
-                    }
-                });
     }
 
     private void setReferenceToMyDialog() {
@@ -322,7 +304,7 @@ public class ChatActivity extends AppCompatActivity
         String messageText = String.valueOf(input);
 
         if (messagesReference == null || messageText.isEmpty() || messageText.equals("")) {
-            Toast.makeText(this, "update new message to database failure", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Update new message to database failure", Toast.LENGTH_SHORT).show();
             return false;
         }
 
@@ -337,5 +319,18 @@ public class ChatActivity extends AppCompatActivity
         messagesAdapter.notifyDataSetChanged();
 
         return true;
+    }
+
+    @Override
+    public void logout() {
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        startActivity(new Intent(getContext(), LoginActivity.class));
+                        finish();
+                    }
+                });
     }
 }
