@@ -36,7 +36,6 @@ import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
 public class LoginActivity extends AuthActivity implements LoginView, View.OnClickListener {
 
     private static final String TAG = "LoginActivity";
-    private static final String TITTLE_PROGRESS_DIALOG = "Signing in";
 
     private TextInputLayout textInputLayoutEmail, textInputLayoutPassword;
     private TextInputEditText edtEmail, edtPassword;
@@ -68,11 +67,6 @@ public class LoginActivity extends AuthActivity implements LoginView, View.OnCli
         if (currentUser != null) {
             auth.addAuthStateListener(authStateListener);
         }
-    }
-
-    @Override
-    public void showAuthError() {
-        Toast.makeText(getContext(), R.string.auth_error, Toast.LENGTH_LONG).show();
     }
 
     @Override

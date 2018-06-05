@@ -55,7 +55,7 @@ public abstract class BaseMainActivity extends BaseActivity
     protected void onCreateNavigationDrawer() {
         super.setContentView(R.layout.layout_base_main);
 
-        Log.d(TAG, "onCreate()");
+        Log.d(TAG, "onCreateNavigationDrawer()");
 
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
@@ -156,23 +156,26 @@ public abstract class BaseMainActivity extends BaseActivity
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
+        item.setCheckable(true); // set item as selected to persist highlight
+        drawerLayout.closeDrawers(); // close drawer when item is tapped
+
         switch (item.getItemId()) {
             case R.id.nav_home:
                 Intent intent = new Intent(getContext(), ListUserActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
-                return true;
+                break;
             case R.id.nav_setting:
                 Toast.makeText(getContext(), "go to setting screen", Toast.LENGTH_SHORT).show();
-                return true;
+                break;
             case R.id.nav_trash:
                 Toast.makeText(getContext(), "go to trash screen", Toast.LENGTH_SHORT).show();
-                return true;
+                break;
             case R.id.nav_logout:
                 logout();
-                return true;
+                break;
         }
-        return false;
+        return true;
     }
 
     @Override
