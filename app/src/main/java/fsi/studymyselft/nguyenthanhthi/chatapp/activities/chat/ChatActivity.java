@@ -26,6 +26,7 @@ import com.stfalcon.chatkit.messages.MessagesList;
 import com.stfalcon.chatkit.messages.MessagesListAdapter;
 
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
+import fsi.studymyselft.nguyenthanhthi.chatapp.activities.BaseActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat.holders.CustomIncomingTextMessageViewHolder;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat.holders.CustomOutcomingTextMessageViewHolder;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.listUser.ListUserActivity;
@@ -34,7 +35,7 @@ import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.Message;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
 import fsi.studymyselft.nguyenthanhthi.chatapp.other.InternetChecking;
 
-public class ChatActivity extends AppCompatActivity
+public class ChatActivity extends BaseActivity
         implements ChatView, MessageInput.InputListener {
 
     private static final String TAG = "ChatActivity";
@@ -49,8 +50,6 @@ public class ChatActivity extends AppCompatActivity
     private Message newMessage;
 
     private MessagesListAdapter<Message> messagesAdapter;
-
-    private ImageLoader imageLoader;
 
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
@@ -68,7 +67,7 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public void bindViews() {
-        showErrorInternetCheckingIfExist();
+        showErrorInternetCheckingIfExist(TAG);
 
         messagesList = (MessagesList) findViewById(R.id.messagesList);
         messageInput = (MessageInput) findViewById(R.id.input);
@@ -106,21 +105,6 @@ public class ChatActivity extends AppCompatActivity
     @Override
     public Context getContext() {
         return ChatActivity.this;
-    }
-
-    @Override
-    public void showErrorInternetCheckingIfExist() {
-        InternetChecking.checkInternet(getContext(), TAG);
-    }
-
-    @Override
-    public void showProgress() {
-        progressDialog = ProgressDialog.show(getContext(), "Loading list users", getString(R.string.please_wait));
-    }
-
-    @Override
-    public void hideProgress() {
-        progressDialog.dismiss();
     }
 
     @Override
@@ -275,12 +259,7 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public void initMessageAdapter() {
-        imageLoader = new ImageLoader() {
-            @Override
-            public void loadImage(ImageView imageView, String url) {
-                Picasso.with(getContext()).load(url).into(imageView);
-            }
-        };
+        initImageLoader();
 
         MessageHolders messageHolders = new MessageHolders()
                 .setIncomingTextConfig(
@@ -290,7 +269,7 @@ public class ChatActivity extends AppCompatActivity
                         CustomOutcomingTextMessageViewHolder.class,
                         R.layout.item_custom_outcoming_text_message);
 
-        messagesAdapter = new MessagesListAdapter<Message>(currentUser.getUid(), messageHolders, imageLoader);
+        messagesAdapter = new MessagesListAdapter<Message>(currentUser.getUid(), messageHolders, super.imageLoader);
     }
 
     @Override
