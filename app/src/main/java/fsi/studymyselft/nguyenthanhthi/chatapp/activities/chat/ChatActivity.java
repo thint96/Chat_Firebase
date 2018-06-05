@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -12,9 +11,6 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -30,7 +26,7 @@ import com.stfalcon.chatkit.messages.MessagesList;
 import com.stfalcon.chatkit.messages.MessagesListAdapter;
 
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
-import fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.login.LoginActivity;
+import fsi.studymyselft.nguyenthanhthi.chatapp.activities.BaseActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat.holders.CustomIncomingTextMessageViewHolder;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat.holders.CustomOutcomingTextMessageViewHolder;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.listUser.ListUserActivity;
@@ -39,7 +35,7 @@ import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.Message;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
 import fsi.studymyselft.nguyenthanhthi.chatapp.other.InternetChecking;
 
-public class ChatActivity extends AppCompatActivity
+public class ChatActivity extends BaseActivity
         implements ChatView, MessageInput.InputListener {
 
     private static final String TAG = "ChatActivity";
@@ -54,8 +50,6 @@ public class ChatActivity extends AppCompatActivity
     private Message newMessage;
 
     private MessagesListAdapter<Message> messagesAdapter;
-
-    private ImageLoader imageLoader;
 
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
@@ -73,7 +67,7 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public void bindViews() {
-        showErrorInternetCheckingIfExist();
+        showErrorInternetCheckingIfExist(TAG);
 
         messagesList = (MessagesList) findViewById(R.id.messagesList);
         messageInput = (MessageInput) findViewById(R.id.input);
@@ -114,24 +108,9 @@ public class ChatActivity extends AppCompatActivity
     }
 
     @Override
-    public void showErrorInternetCheckingIfExist() {
-        InternetChecking.checkInternet(getContext(), TAG);
-    }
-
-    @Override
-    public void showProgress() {
-        progressDialog = ProgressDialog.show(getContext(), "Loading list users", getString(R.string.please_wait));
-    }
-
-    @Override
-    public void hideProgress() {
-        progressDialog.dismiss();
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         this.menu = menu;
-        getMenuInflater().inflate(R.menu.main_menu, menu);
+        getMenuInflater().inflate(R.menu.edit_menu, menu);
         return true;
     }
 
@@ -280,12 +259,7 @@ public class ChatActivity extends AppCompatActivity
 
     @Override
     public void initMessageAdapter() {
-        imageLoader = new ImageLoader() {
-            @Override
-            public void loadImage(ImageView imageView, String url) {
-                Picasso.with(getContext()).load(url).into(imageView);
-            }
-        };
+        initImageLoader();
 
         MessageHolders messageHolders = new MessageHolders()
                 .setIncomingTextConfig(
@@ -295,7 +269,7 @@ public class ChatActivity extends AppCompatActivity
                         CustomOutcomingTextMessageViewHolder.class,
                         R.layout.item_custom_outcoming_text_message);
 
-        messagesAdapter = new MessagesListAdapter<Message>(currentUser.getUid(), messageHolders, imageLoader);
+        messagesAdapter = new MessagesListAdapter<Message>(currentUser.getUid(), messageHolders, super.imageLoader);
     }
 
     @Override

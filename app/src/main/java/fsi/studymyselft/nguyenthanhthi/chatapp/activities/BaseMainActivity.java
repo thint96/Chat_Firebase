@@ -9,7 +9,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,6 +26,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.squareup.picasso.Picasso;
+import com.stfalcon.chatkit.commons.ImageLoader;
 
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.login.LoginActivity;
@@ -36,7 +37,8 @@ import fsi.studymyselft.nguyenthanhthi.chatapp.activities.listUser.ListUserActiv
  * Created by thanhthi on 03/06/2018.
  */
 
-public abstract class BaseMainActivity extends AppCompatActivity implements BaseMainView, MenuItem.OnMenuItemClickListener {
+public abstract class BaseMainActivity extends BaseActivity
+        implements BaseMainView, MenuItem.OnMenuItemClickListener {
 
     private static final String TAG = "BaseMainActivity";
 
@@ -44,14 +46,13 @@ public abstract class BaseMainActivity extends AppCompatActivity implements Base
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
+    private Toolbar toolbar;
     private Menu drawerMenu;
 
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreateNavigationDrawer() {
         super.setContentView(R.layout.layout_base_main);
 
         Log.d(TAG, "onCreate()");
@@ -73,14 +74,16 @@ public abstract class BaseMainActivity extends AppCompatActivity implements Base
         txtUserName.setText(email.substring(0, indexEnd));
         txtEmail.setText(email);
 
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, 0, 0) {
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, 0, 0) {
             @Override
             public void onDrawerClosed(View v){
+                getSupportActionBar().show();
                 super.onDrawerClosed(v);
             }
 
             @Override
             public void onDrawerOpened(View v) {
+                getSupportActionBar().hide();
                 super.onDrawerOpened(v);
             }
         };
@@ -122,6 +125,7 @@ public abstract class BaseMainActivity extends AppCompatActivity implements Base
 
     @Override
     public void setContentView(int layoutResID) {
+        onCreateNavigationDrawer();
         if (myContentLayout != null) {
             LayoutInflater layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
             ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(
