@@ -21,11 +21,12 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
+import fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.AuthActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.login.LoginActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.listUser.ListUserActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.other.InternetChecking;
 
-public class RegisterActivity extends AppCompatActivity implements RegisterView, View.OnClickListener {
+public class RegisterActivity extends AuthActivity implements RegisterView, View.OnClickListener {
 
     private final String TAG = "RegisterActivity";
 
@@ -48,15 +49,10 @@ public class RegisterActivity extends AppCompatActivity implements RegisterView,
     }
 
     @Override
-    public void showAuthError() {
-        Toast.makeText(getContext(), R.string.auth_error, Toast.LENGTH_LONG).show();
-    }
-
-    @Override
     public void bindViews() {
         getSupportActionBar().hide();
 
-        showErrorInternetCheckingIfExist();
+        showErrorInternetCheckingIfExist(TAG);
 
         textInputLayoutEmail = (TextInputLayout) findViewById(R.id.til_email);
         textInputLayoutPassword = (TextInputLayout) findViewById(R.id.til_password);
@@ -76,21 +72,6 @@ public class RegisterActivity extends AppCompatActivity implements RegisterView,
     @Override
     public Context getContext() {
         return RegisterActivity.this;
-    }
-
-    @Override
-    public void showErrorInternetCheckingIfExist() {
-        InternetChecking.checkInternet(getContext(), TAG);
-    }
-
-    @Override
-    public void showProgress() {
-        progressDialog = ProgressDialog.show(getContext(), getString(R.string.register) + "ing", getString(R.string.please_wait));
-    }
-
-    @Override
-    public void hideProgress() {
-        progressDialog.dismiss();
     }
 
     @Override
@@ -139,11 +120,6 @@ public class RegisterActivity extends AppCompatActivity implements RegisterView,
     }
 
     @Override
-    public void navigateToHome() {
-
-    }
-
-    @Override
     public void onClick(View v) {
         if (v.getId() == R.id.btn_register) {
             register();
@@ -163,7 +139,7 @@ public class RegisterActivity extends AppCompatActivity implements RegisterView,
         String inputPass2 = edtConfirmPassword.getText().toString().trim();
 
         if (!hasError(inputEmail, inputPass, inputPass2)) {
-            showProgress();
+            showProgress(getString(R.string.registering), getString(R.string.please_wait));
             registerWithEmailPassword(inputEmail, inputPass);
         }
     }
