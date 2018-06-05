@@ -8,14 +8,16 @@ import android.content.Context;
 
 public interface BaseView {
 
-    public void bindViews();
+    void bindViews();
 
-    public Context getContext();
+    Context getContext();
 
-    void showErrorInternetCheckingIfExist();
+    void showErrorInternetCheckingIfExist(String tag);
 
-    public void showProgress();
+    void showProgress(String title, String message);
 
-    public void hideProgress();
+    void hideProgress();
+
+    void initImageLoader();
 
 }

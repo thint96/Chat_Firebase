@@ -3,15 +3,10 @@ package fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.login;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -33,14 +28,15 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
+import fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.AuthActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.register.RegisterActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.listUser.ListUserActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
-import fsi.studymyselft.nguyenthanhthi.chatapp.other.InternetChecking;
 
-public class LoginActivity extends AppCompatActivity implements LoginView, View.OnClickListener {
+public class LoginActivity extends AuthActivity implements LoginView, View.OnClickListener {
 
-    private final String TAG = "LoginActivity";
+    private static final String TAG = "LoginActivity";
+    private static final String TITTLE_PROGRESS_DIALOG = "Signing in";
 
     private TextInputLayout textInputLayoutEmail, textInputLayoutPassword;
     private TextInputEditText edtEmail, edtPassword;
@@ -83,7 +79,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
     public void bindViews() {
         getSupportActionBar().hide();
 
-        showErrorInternetCheckingIfExist();
+        showErrorInternetCheckingIfExist(TAG);
 
         //check to auto-login
         checkUserHasSignedIn();
@@ -115,21 +111,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
     }
 
     @Override
-    public void showErrorInternetCheckingIfExist() {
-        InternetChecking.checkInternet(getContext(), TAG);
-    }
-
-    @Override
-    public void showProgress() {
-        progressDialog = ProgressDialog.show(getContext(), "Signing in", getString(R.string.please_wait));
-    }
-
-    @Override
-    public void hideProgress() {
-        progressDialog.dismiss();
-    }
-
-    @Override
     public void setUsernameError() {
         String email = edtEmail.getText().toString().trim();
 
@@ -158,11 +139,6 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
     public void navigateToSignUp() {
         Intent intent = new Intent(getContext(), RegisterActivity.class);
         startActivity(intent);
-    }
-
-    @Override
-    public void navigateToHome() {
-
     }
 
     @Override
@@ -237,7 +213,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView, View.
         }
 
         if (!hasError(inputEmail, inputPass)) {
-            showProgress();
+            showProgress(getString(R.string.signing_in), getString(R.string.please_wait));
             loginWithEmailPassword(inputEmail, inputPass);
         }
     }

@@ -17,6 +17,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.stfalcon.chatkit.dialogs.DialogsList;
+import com.stfalcon.chatkit.dialogs.DialogsListAdapter;
 
 import java.util.ArrayList;
 
@@ -24,6 +26,7 @@ import fsi.studymyselft.nguyenthanhthi.chatapp.R;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.BaseMainActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat.ChatActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.adapter.ListUserAdapter;
+import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.Dialog;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
 import fsi.studymyselft.nguyenthanhthi.chatapp.other.InternetChecking;
 
@@ -35,8 +38,6 @@ public class ListUserActivity extends BaseMainActivity implements ListUserView {
     private ListView lvUsers;
     private ArrayList<User> users;
     private ListUserAdapter adapter;
-
-    private ProgressDialog progressDialog;
     private Menu menu;
 
     private String newUserID;
@@ -58,9 +59,9 @@ public class ListUserActivity extends BaseMainActivity implements ListUserView {
 
     @Override
     public void bindViews() {
-        showErrorInternetCheckingIfExist();
+        showErrorInternetCheckingIfExist(TAG);
 
-        showProgress();
+        showProgress(getString(R.string.loading), getString(R.string.please_wait));
 
         showUsersList();
 
@@ -81,21 +82,6 @@ public class ListUserActivity extends BaseMainActivity implements ListUserView {
     @Override
     public Context getContext() {
         return ListUserActivity.this;
-    }
-
-    @Override
-    public void showProgress() {
-        progressDialog = ProgressDialog.show(getContext(), "Loading list users", getString(R.string.please_wait));
-    }
-
-    @Override
-    public void hideProgress() {
-        progressDialog.dismiss();
-    }
-
-    @Override
-    public void showErrorInternetCheckingIfExist() {
-        InternetChecking.checkInternet(getContext(), TAG);
     }
 
     @Override
@@ -121,6 +107,7 @@ public class ListUserActivity extends BaseMainActivity implements ListUserView {
         pushDataUsersToListUsers();
 
         adapter = new ListUserAdapter(getContext(), users);
+
         lvUsers.setAdapter(adapter);
     }
 
