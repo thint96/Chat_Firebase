@@ -17,6 +17,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.stfalcon.chatkit.dialogs.DialogsList;
+import com.stfalcon.chatkit.dialogs.DialogsListAdapter;
 
 import java.util.ArrayList;
 
@@ -24,6 +26,7 @@ import fsi.studymyselft.nguyenthanhthi.chatapp.R;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.BaseMainActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat.ChatActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.adapter.ListUserAdapter;
+import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.Dialog;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
 import fsi.studymyselft.nguyenthanhthi.chatapp.other.InternetChecking;
 
@@ -31,6 +34,9 @@ public class ListUserActivity extends BaseMainActivity implements ListUserView {
 
     private static final String TAG = "ListUserActivity";
     private static final String USERS_DATABASE = "Users";
+
+    private DialogsList dialogsList; //UI widget
+    private DialogsListAdapter<Dialog> dialogsListAdapter;
 
     private ListView lvUsers;
     private ArrayList<User> users;
@@ -98,6 +104,7 @@ public class ListUserActivity extends BaseMainActivity implements ListUserView {
         auth = FirebaseAuth.getInstance();
 
         lvUsers = (ListView) findViewById(R.id.lvUsers);
+        dialogsList = (DialogsList) findViewById(R.id.dialogs_list);
 
         //update database users if current user have already registered
         updateNewUserToDatabase();
@@ -106,6 +113,7 @@ public class ListUserActivity extends BaseMainActivity implements ListUserView {
         pushDataUsersToListUsers();
 
         adapter = new ListUserAdapter(getContext(), users);
+
         lvUsers.setAdapter(adapter);
     }
 
