@@ -65,7 +65,7 @@
             android:layout_height="wrap_content"
             android:textColorHint="@color/white"
             app:errorEnabled="false"
-            app:hintTextAppearance="@color/white">
+            app:hintTextAppearance="@style/auth_input_text_layout">
 
             <android.support.design.widget.TextInputEditText
                 android:id="@+id/edt_email"
@@ -86,7 +86,7 @@
             android:layout_marginTop="5dp"
             android:textColorHint="@color/white"
             app:errorEnabled="false"
-            app:hintTextAppearance="@color/white"
+            app:hintTextAppearance="@style/auth_input_text_layout"
             app:passwordToggleEnabled="true"
             app:passwordToggleTint="@color/green_moss_dark">
 
@@ -107,7 +107,7 @@
             android:layout_marginTop="5dp"
             android:textColorHint="@color/white"
             app:errorEnabled="false"
-            app:hintTextAppearance="@color/white"
+            app:hintTextAppearance="@style/auth_input_text_layout"
             app:passwordToggleEnabled="true"
             app:passwordToggleTint="@color/green_moss_dark">
 
