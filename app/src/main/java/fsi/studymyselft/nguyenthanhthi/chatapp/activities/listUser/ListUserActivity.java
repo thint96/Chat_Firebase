@@ -61,6 +61,8 @@ public class ListUserActivity extends BaseMainActivity implements ListUserView {
     public void bindViews() {
         showErrorInternetCheckingIfExist(TAG);
 
+        getSupportActionBar().setTitle("Danh sách cuộc trò chuyện");
+
         showProgress(getString(R.string.loading), getString(R.string.please_wait));
 
         showUsersList();
