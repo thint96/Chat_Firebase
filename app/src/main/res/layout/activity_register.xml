@@ -65,13 +65,15 @@
             android:layout_height="wrap_content"
             android:textColorHint="@color/white"
             app:errorEnabled="false"
-            app:hintTextAppearance="@color/white">
+            app:hintTextAppearance="@style/auth_text_input_layout">
 
             <android.support.design.widget.TextInputEditText
                 android:id="@+id/edt_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/email"
+                android:textColor="@color/white"
+                android:textColorHint="@color/gray"
                 android:inputType="textEmailAddress"
                 android:paddingBottom="14dp"
                 android:paddingTop="14dp"
@@ -86,7 +88,7 @@
             android:layout_marginTop="5dp"
             android:textColorHint="@color/white"
             app:errorEnabled="false"
-            app:hintTextAppearance="@color/white"
+            app:hintTextAppearance="@style/auth_text_input_layout"
             app:passwordToggleEnabled="true"
             app:passwordToggleTint="@color/green_moss_dark">
 
@@ -95,7 +97,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/password"
+                android:textColorHint="@color/gray"
                 android:inputType="textPassword"
+                android:textColor="@color/white"
                 android:textSize="14sp"/>
         </android.support.design.widget.TextInputLayout>
 
@@ -107,7 +111,7 @@
             android:layout_marginTop="5dp"
             android:textColorHint="@color/white"
             app:errorEnabled="false"
-            app:hintTextAppearance="@color/white"
+            app:hintTextAppearance="@style/auth_text_input_layout"
             app:passwordToggleEnabled="true"
             app:passwordToggleTint="@color/green_moss_dark">
 
@@ -116,10 +120,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/confirm_password"
+                android:textColor="@color/white"
+                android:textColorHint="@color/gray"
                 android:inputType="textPassword"
                 android:textSize="14sp"/>
         </android.support.design.widget.TextInputLayout>
-
     </LinearLayout>
 
     <Button
