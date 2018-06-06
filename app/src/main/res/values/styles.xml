@@ -8,7 +8,7 @@
         <item name="colorAccent">@color/white</item>
     </style>
 
-    <style name="auth_input_text_layout">
+    <style name="auth_text_input_layout">
         <item name="android:layout_width">match_parent</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:keyTextSize">8sp</item>
