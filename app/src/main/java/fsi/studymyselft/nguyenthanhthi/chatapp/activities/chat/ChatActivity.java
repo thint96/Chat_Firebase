@@ -110,18 +110,14 @@ public class ChatActivity extends BaseActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         this.menu = menu;
-        getMenuInflater().inflate(R.menu.edit_menu, menu);
+        getMenuInflater().inflate(R.menu.info_dialog_menu, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.copy) {
-            copyToClipBoard();
-            return true;
-        }
-        else if (item.getItemId() == R.id.delete) {
-            deleteMessage();
+        if (item.getItemId() == R.id.info) {
+            //go to activity Detail Dialog
             return true;
         }
         else if (item.getItemId() == android.R.id.home) {
@@ -237,7 +233,8 @@ public class ChatActivity extends BaseActivity
                             if (currentUser.getUid().equals(message.getUser().getId())) {
                                 //if this message is belong to my user
                                 message.getUser().setAvatar("");
-                            } else { //if this message is belong to other user
+                            }
+                            else { //if this message is belong to other user
                                 message.getUser().setAvatar(otherUser.getAvatar());
                             }
 
