@@ -58,6 +58,7 @@ dependencies {
 
 apply plugin: 'com.google.gms.google-services'
 
+
 configurations.all {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         def requested = details.requested

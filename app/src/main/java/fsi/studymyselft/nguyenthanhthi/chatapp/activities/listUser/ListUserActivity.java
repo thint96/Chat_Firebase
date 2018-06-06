@@ -38,7 +38,6 @@ public class ListUserActivity extends BaseMainActivity implements ListUserView {
     private ListView lvUsers;
     private ArrayList<User> users;
     private ListUserAdapter adapter;
-    private Menu menu;
 
     private String newUserID;
 
@@ -61,7 +60,7 @@ public class ListUserActivity extends BaseMainActivity implements ListUserView {
     public void bindViews() {
         showErrorInternetCheckingIfExist(TAG);
 
-        getSupportActionBar().setTitle("Danh sách cuộc trò chuyện");
+        setTitle("Danh sách cuộc trò chuyện");
 
         showProgress(getString(R.string.loading), getString(R.string.please_wait));
 
@@ -96,8 +95,6 @@ public class ListUserActivity extends BaseMainActivity implements ListUserView {
         userReference = rootReference.child(USERS_DATABASE);
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        setTitle("List members - " + currentUser.getEmail());
-
         auth = FirebaseAuth.getInstance();
 
         lvUsers = (ListView) findViewById(R.id.lvUsers);
@@ -111,18 +108,6 @@ public class ListUserActivity extends BaseMainActivity implements ListUserView {
         adapter = new ListUserAdapter(getContext(), users);
 
         lvUsers.setAdapter(adapter);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        this.menu = menu;
-        getMenuInflater().inflate(R.menu.edit_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return true;
     }
 
     private void updateNewUserToDatabase() {
