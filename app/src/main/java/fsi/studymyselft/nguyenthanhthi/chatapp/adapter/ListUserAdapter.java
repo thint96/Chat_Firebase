@@ -1,6 +1,10 @@
 package fsi.studymyselft.nguyenthanhthi.chatapp.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,15 +12,19 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
+import fsi.studymyselft.nguyenthanhthi.chatapp.other.DrawableHelper;
 
 /**
  * Created by thanhthi on 04/05/2018.
  */
 
 public class ListUserAdapter extends BaseAdapter {
+
+    private static final String TAG = "ListUserAdapter";
 
     private ArrayList<User> users;
     private LayoutInflater inflater;
@@ -51,17 +59,34 @@ public class ListUserAdapter extends BaseAdapter {
         return position;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.item_list_users, null);
         }
+
         avatar = convertView.findViewById(R.id.txtAvatar);
         email = convertView.findViewById(R.id.txtEmail);
 
         avatar.setText(users.get(position).getEmail().substring(0, 1).toUpperCase());
         email.setText(users.get(position).getEmail());
 
+        DrawableHelper.withContext(convertView.getContext())
+                .customColor(getRandomColor())
+                .withDrawable(R.drawable.bg_avatar)
+                .customTint()
+                .applyToBackground(avatar);
+
         return convertView;
+    }
+
+    private String getRandomColor() {
+        String colorResult;
+        Random random = new Random();
+        int color = Color.argb(155, random.nextInt(256), random.nextInt(256), random.nextInt(256));
+        colorResult = "#" + Integer.toHexString(color);
+        Log.d(TAG, "Random color is: " + colorResult);
+        return colorResult;
     }
 }
