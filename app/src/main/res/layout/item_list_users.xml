@@ -2,9 +2,9 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="70dp"
+    android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="5dp">
+    android:padding="10dp">
 
     <TextView
         android:id="@+id/txtAvatar"
@@ -13,6 +13,7 @@
         android:layout_gravity="left|center"
         android:gravity="center"
         android:text="A"
+        android:layout_marginLeft="5dp"
         android:textColor="@color/white"
         android:background="@drawable/bg_avatar"
         android:textSize="30sp"
@@ -20,10 +21,10 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="75dp"
         android:orientation="vertical"
         android:layout_gravity="center"
-        android:paddingLeft="10dp">
+        android:paddingLeft="15dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -32,32 +33,34 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_gravity="center"
                 android:src="@drawable/ic_email"/>
 
             <TextView
                 android:id="@+id/txtEmail"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:paddingLeft="10dp"
+                android:paddingLeft="15dp"
                 android:text="Email"
                 android:textColor="@color/black"
-                android:textSize="12sp"
+                android:textSize="16sp"
                 android:textStyle="bold"/>
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/message_recent_layout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_gravity="center"
                 android:src="@drawable/ic_recent_message"/>
 
             <TextView
@@ -65,20 +68,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
-                android:paddingLeft="10dp"
+                android:paddingBottom="1dp"
+                android:paddingLeft="15dp"
                 android:text="Message recent"
-                android:textSize="10sp"/>
+                android:textSize="14sp"/>
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/position_layout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_gravity="center"
                 android:src="@drawable/ic_location"/>
 
             <TextView
@@ -86,9 +92,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
-                android:paddingLeft="10dp"
+                android:paddingLeft="15dp"
+                android:paddingBottom="1dp"
                 android:text="Position"
-                android:textSize="10sp"/>
+                android:textSize="14sp"/>
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>
