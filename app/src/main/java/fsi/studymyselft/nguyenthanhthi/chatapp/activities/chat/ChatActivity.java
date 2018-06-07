@@ -252,13 +252,11 @@ public class ChatActivity extends BaseActivity
             isFirst = false;
         }
         else {
-            messagesReference.orderByKey().limitToLast(1).addValueEventListener(new ValueEventListener() {
+            myDialogReference.child("Messages").limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    Message message = dataSnapshot.getValue(Message.class);
-
-                    Log.e(TAG, "id of current user: " + currentUser.getUid());
-                    Log.e(TAG, "id of user in messages" + message.getUser().getId());
+                    DataSnapshot snapshot = dataSnapshot.getChildren().iterator().next();
+                    Message message = snapshot.getValue(Message.class);
 
                     //set avatar for other user to show UI
                     if (currentUser.getUid().equals(message.getUser().getId())) {
