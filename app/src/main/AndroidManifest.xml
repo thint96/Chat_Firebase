@@ -29,6 +29,8 @@
         </activity>
         <activity android:name=".activities.listUser.ListUserActivity">
         </activity>
+        <activity android:name=".activities.detailInfoUser.DetailInfoUserActivity">
+        </activity>
     </application>
 
 </manifest>

@@ -25,6 +25,7 @@ import fsi.studymyselft.nguyenthanhthi.chatapp.R;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.BaseActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat.holders.CustomIncomingTextMessageViewHolder;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat.holders.CustomOutcomingTextMessageViewHolder;
+import fsi.studymyselft.nguyenthanhthi.chatapp.activities.detailInfoUser.DetailInfoUserActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.listUser.ListUserActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.Dialog;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.Message;
@@ -115,8 +116,10 @@ public class ChatActivity extends BaseActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.info) {
             //go to activity Detail Dialog
+            startActivity(new Intent(getContext(), DetailInfoUserActivity.class));
             return true;
-        } else if (item.getItemId() == android.R.id.home) {
+        }
+        else if (item.getItemId() == android.R.id.home) {
             navigateToListUser();
             return true;
         }
