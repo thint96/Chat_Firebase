@@ -116,7 +116,7 @@ public class ChatActivity extends BaseActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.info) {
             //go to activity Detail Dialog
-            startActivity(new Intent(getContext(), DetailInfoUserActivity.class));
+            navigateToDetailInfoUser();
             return true;
         }
         else if (item.getItemId() == android.R.id.home) {
@@ -160,6 +160,11 @@ public class ChatActivity extends BaseActivity
         Intent intent = new Intent(getContext(), ListUserActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
+    }
+
+    @Override
+    public void navigateToDetailInfoUser() {
+        startActivity(new Intent(getContext(), DetailInfoUserActivity.class));
     }
 
     private void setReferenceToMyDialog() {
