@@ -220,7 +220,7 @@ public class ChatActivity extends BaseActivity
         messagesReference = myDialogReference.child("Messages");
 
         if (isFirst) {
-            messagesReference.addValueEventListener(new ValueEventListener() {
+            messagesReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
@@ -247,6 +247,8 @@ public class ChatActivity extends BaseActivity
                                 messagesAdapter.updateNewMessage(message);
                                 messagesAdapter.notifyDataSetChanged();
                             }
+
+                            isFirst = false;
                         }
                     }
                 }
@@ -257,7 +259,7 @@ public class ChatActivity extends BaseActivity
                 }
             });
 
-            isFirst = false;
+
         }
         else {
             myDialogReference.child("Messages").limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -286,7 +288,7 @@ public class ChatActivity extends BaseActivity
             });
         }
     }
-    
+
     @Override
     public void initMessageAdapter() {
         initImageLoader();
