@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -46,7 +47,7 @@ public class ListUserAdapter extends BaseAdapter {
 
     private FirebaseUser currentUser;
     private FirebaseDatabase database;
-    private DatabaseReference rootReference, dialogsReference, myDialogReference, messagesReference;
+    private DatabaseReference rootReference, dialogsReference, myDialogReference;
 
     public ListUserAdapter(Context context, ArrayList<User> users) {
         inflater = LayoutInflater.from(context);
@@ -67,7 +68,7 @@ public class ListUserAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int position) {
+    public User getItem(int position) {
         return users.get(position);
     }
 
@@ -91,23 +92,25 @@ public class ListUserAdapter extends BaseAdapter {
         txtAvatar.setText(users.get(position).getEmail().substring(0, 1).toUpperCase());
         txtEmail.setText(users.get(position).getEmail());
 
-//        setMessageRecent(users.get(position));
-
-        if (recentMessage == null) {
-            //visible child view
-            Log.d(TAG, "recent message is null");
-            txtMessageRecent.setText("");
-        }
-        else {
-            txtMessageRecent.setText(recentMessage.getText());
-        }
-
         //set color background for avatar
         DrawableHelper.withContext(convertView.getContext())
                 .customColor(getRandomColor())
                 .withDrawable(R.drawable.bg_avatar)
                 .customTint()
                 .applyToBackground(txtAvatar);
+
+        Log.d(TAG, "----------------------- other user email (1): " + users.get(position).getEmail());
+
+        setMessageRecent(users.get(position));
+
+        if (recentMessage == null) {
+            //visible view of recent message
+            Log.d(TAG, "recent message is null");
+            txtMessageRecent.setText("");
+        }
+        else {
+            txtMessageRecent.setText(recentMessage.getText());
+        }
 
         return convertView;
     }
@@ -122,6 +125,7 @@ public class ListUserAdapter extends BaseAdapter {
 
     private void setMessageRecent(final User otherUser) {
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        Log.d(TAG, "other user email (2): " + otherUser.getEmail() + " --------------------------------");
 
         //set reference of my dialog in database and get messages in this dialog
         final String dialogName = (currentUser.getUid() + "|" + otherUser.getId());
@@ -162,13 +166,15 @@ public class ListUserAdapter extends BaseAdapter {
                 }
 
                 if (!isMyDialogExist) {
+                    recentMessage = new Message();
+                    recentMessage.setText("null");
                     return;
                 }
 
                 myDialogReference = dialogsReference.child(myDialog.getId());
 
                 //get all messages in my dialog database
-                getAllMessagesDialog(otherUser);
+                getAllMessagesDialog();
             }
 
             @Override
@@ -178,27 +184,18 @@ public class ListUserAdapter extends BaseAdapter {
         });
     }
 
-    private void getAllMessagesDialog(final User otherUser) {
+    private void getAllMessagesDialog() {
         if (myDialogReference.child("Messages") == null) {
             myDialogReference.setValue("Messages");
         }
-        messagesReference = myDialogReference.child("Messages");
 
-        messagesReference.addValueEventListener(new ValueEventListener() {
+        myDialogReference.child("Messages").limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    Log.d(TAG, "Total count of messages in my dialog database = " + dataSnapshot.getChildrenCount());
-
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        Message message = snapshot.getValue(Message.class);
-                        myDialog.addMessageToListMessages(message);
-                    }
-
-                    Log.d(TAG, "Total count of messages in my Dialog = " + myDialog.getMessages().size());
-                    recentMessage = myDialog.getMessages().get(myDialog.getMessages().size() - 1);
+                    DataSnapshot snapshot = dataSnapshot.getChildren().iterator().next();
+                    recentMessage = snapshot.getValue(Message.class);
                 }
-
             }
 
             @Override

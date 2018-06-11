@@ -220,6 +220,7 @@ public class ChatActivity extends BaseActivity
         messagesReference = myDialogReference.child("Messages");
 
         if (isFirst) {
+            //get history message from database
             messagesReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -258,10 +259,9 @@ public class ChatActivity extends BaseActivity
 
                 }
             });
-
-
         }
         else {
+            //get the newest message from database (The message has already been sent)
             myDialogReference.child("Messages").limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
