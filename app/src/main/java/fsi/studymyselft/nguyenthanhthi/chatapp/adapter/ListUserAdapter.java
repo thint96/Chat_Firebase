@@ -99,13 +99,13 @@ public class ListUserAdapter extends BaseAdapter {
                 .customTint()
                 .applyToBackground(txtAvatar);
 
-        Log.d(TAG, "----------------------- other user email (1): " + users.get(position).getEmail());
+        Log.e(TAG, "----------------------- other user email (1): " + users.get(position).getEmail());
 
         setMessageRecent(users.get(position));
 
         if (recentMessage == null) {
             //visible view of recent message
-            Log.d(TAG, "recent message is null");
+            Log.e(TAG, "recent message is null");
             txtMessageRecent.setText("");
         }
         else {
@@ -125,7 +125,8 @@ public class ListUserAdapter extends BaseAdapter {
 
     private void setMessageRecent(final User otherUser) {
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        Log.d(TAG, "other user email (2): " + otherUser.getEmail() + " --------------------------------");
+        Log.e(TAG, "current user email: " + currentUser.getEmail());
+
 
         //set reference of my dialog in database and get messages in this dialog
         final String dialogName = (currentUser.getUid() + "|" + otherUser.getId());
@@ -157,7 +158,7 @@ public class ListUserAdapter extends BaseAdapter {
                             if (dialog.getName().equals(reverseDialogName)) {
                                 myDialog.setName(reverseDialogName); //rename of my dialog if necessary
                             }
-                            Log.d(TAG, "my dialog id = " + dialog.getId());
+                            Log.e(TAG, "My dialog id = " + dialog.getId());
                             myDialog.setId(dialog.getId());
                             isMyDialogExist = true;
                             break;
@@ -182,6 +183,7 @@ public class ListUserAdapter extends BaseAdapter {
 
             }
         });
+        Log.e(TAG, "other user email (2): " + otherUser.getEmail() + " --------------------------------");
     }
 
     private void getAllMessagesDialog() {
@@ -195,6 +197,7 @@ public class ListUserAdapter extends BaseAdapter {
                 if (dataSnapshot.exists()) {
                     DataSnapshot snapshot = dataSnapshot.getChildren().iterator().next();
                     recentMessage = snapshot.getValue(Message.class);
+                    Log.e(TAG, "Content of recent message: " + recentMessage.getText());
                 }
             }
 
