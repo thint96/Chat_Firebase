@@ -11,19 +11,19 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_gravity="left|center"
+        android:layout_marginLeft="5dp"
+        android:background="@drawable/bg_avatar"
         android:gravity="center"
         android:text="A"
-        android:layout_marginLeft="5dp"
         android:textColor="@color/white"
-        android:background="@drawable/bg_avatar"
         android:textSize="30sp"
         android:textStyle="bold"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="75dp"
-        android:orientation="vertical"
         android:layout_gravity="center"
+        android:orientation="vertical"
         android:paddingLeft="15dp">
 
         <LinearLayout
@@ -71,7 +71,8 @@
                 android:paddingBottom="1dp"
                 android:paddingLeft="15dp"
                 android:text="Message recent"
-                android:textSize="14sp"/>
+                android:textSize="14sp"
+                android:textStyle="italic"/>
         </LinearLayout>
 
         <LinearLayout
@@ -92,8 +93,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
-                android:paddingLeft="15dp"
                 android:paddingBottom="1dp"
+                android:paddingLeft="15dp"
                 android:text="Position"
                 android:textSize="14sp"/>
         </LinearLayout>

@@ -58,15 +58,15 @@ public class ListUserActivity extends BaseMainActivity implements ListUserView {
 
     @Override
     public void bindViews() {
-        showErrorInternetCheckingIfExist(TAG);
+        super.showErrorInternetCheckingIfExist(TAG);
 
         setTitle("Danh sách cuộc trò chuyện");
 
-        showProgress(getString(R.string.loading), getString(R.string.please_wait));
+        super.showProgress(getString(R.string.loading), getString(R.string.please_wait));
 
         showUsersList();
 
-        hideProgress();
+        super.hideProgress();
 
         lvUsers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
