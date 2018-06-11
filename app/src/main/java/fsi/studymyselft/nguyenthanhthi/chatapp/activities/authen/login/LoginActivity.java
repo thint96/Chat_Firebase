@@ -71,9 +71,9 @@ public class LoginActivity extends AuthActivity implements LoginView, View.OnCli
 
     @Override
     public void bindViews() {
-        getSupportActionBar().hide();
+        super.setToolbar();
 
-        showErrorInternetCheckingIfExist(TAG);
+        super.showErrorInternetCheckingIfExist(TAG);
 
         //check to auto-login
         checkUserHasSignedIn();
@@ -207,7 +207,7 @@ public class LoginActivity extends AuthActivity implements LoginView, View.OnCli
         }
 
         if (!hasError(inputEmail, inputPass)) {
-            showProgress(getString(R.string.signing_in), getString(R.string.please_wait));
+            super.showProgress(getString(R.string.signing_in), getString(R.string.please_wait));
             loginWithEmailPassword(inputEmail, inputPass);
         }
     }
@@ -245,14 +245,14 @@ public class LoginActivity extends AuthActivity implements LoginView, View.OnCli
                             //go to List Users Activity
                             startActivity(new Intent(getContext(), ListUserActivity.class));
 
-                            hideProgress();
+                            LoginActivity.super.hideProgress();
                         }
                         else {
                             Log.w(TAG, "signInWithEmailPassword:failure", task.getException());
                             Toast.makeText(getContext(), R.string.login_failed, Toast.LENGTH_SHORT).show();
 
-                            showAuthError();
-                            hideProgress();
+                            LoginActivity.super.showAuthError();
+                            LoginActivity.super.hideProgress();
                         }
                     }
                 });
@@ -269,8 +269,10 @@ public class LoginActivity extends AuthActivity implements LoginView, View.OnCli
                 FirebaseUser userSignedIn = firebaseAuth.getCurrentUser();
                 if (userSignedIn != null) {
                     //user have login but don't logout
+                    LoginActivity.super.showProgress(getString(R.string.loading), getString(R.string.please_wait));
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + userSignedIn.getUid());
                     startActivity(new Intent(LoginActivity.this, ListUserActivity.class));
+                    LoginActivity.super.hideProgress();
                     finish();
                 }
                 else {
