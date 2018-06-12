@@ -20,29 +20,29 @@
         android:src="@android:drawable/sym_def_app_icon"/>
 
     <LinearLayout
-        android:layout_marginLeft="20dp"
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/txtUserName"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:text="Username"
             android:gravity=""
-            android:textColor="@color/white"
-            android:textStyle="bold"
+            android:text="Username"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textSize="16sp"/>
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/txtEmail"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
             android:layout_marginTop="10dp"
+            android:layout_weight="1"
             android:text="Email@gmail.com"
             android:textColor="@color/white"
             android:textSize="16sp"/>

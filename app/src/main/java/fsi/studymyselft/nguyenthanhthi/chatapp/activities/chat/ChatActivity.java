@@ -39,7 +39,6 @@ public class ChatActivity extends BaseActivity
 
     private MessagesList messagesList; //UI - widget
     private MessageInput messageInput; //UI - widget
-    private ProgressDialog progressDialog;
     private Menu menu;
 
     private Dialog myDialog;
@@ -67,7 +66,7 @@ public class ChatActivity extends BaseActivity
 
     @Override
     public void bindViews() {
-        showErrorInternetCheckingIfExist(TAG);
+        super.showErrorInternetCheckingIfExist(TAG);
 
         messagesList = (MessagesList) findViewById(R.id.messagesList);
         messageInput = (MessageInput) findViewById(R.id.input);
@@ -87,8 +86,7 @@ public class ChatActivity extends BaseActivity
         otherUser = new User(otherUserId, otherUserEmail, otherUserAvatar);
 
         //set name of dialog and show UI
-        getSupportActionBar().setTitle(otherUserEmail);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        this.setToolbar(otherUserEmail);
 
         //update information users to myDialog
         myDialog.addUserToListUsers(myUser);
@@ -231,8 +229,9 @@ public class ChatActivity extends BaseActivity
         }
         messagesReference = myDialogReference.child("Messages");
 
-        if (isFirst) {
-            //get history message from database
+        if (isFirst) { //get history message from database
+            super.showProgress(getString(R.string.loading), getString(R.string.please_wait));
+
             messagesReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -274,9 +273,10 @@ public class ChatActivity extends BaseActivity
 
                 }
             });
+
+            super.hideProgress();
         }
-        else {
-            //get the newest message from database (The message has already been sent)
+        else { //get the newest message from database (The message has already been sent)
             myDialogReference.child("Messages").limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -349,5 +349,11 @@ public class ChatActivity extends BaseActivity
         messagesReference.child(key).setValue(newMessage);
 
         return true;
+    }
+
+    @Override
+    public void setToolbar(String title) {
+        super.setToolbar(title);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 }

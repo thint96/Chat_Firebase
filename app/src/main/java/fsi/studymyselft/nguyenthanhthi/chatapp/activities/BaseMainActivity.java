@@ -9,7 +9,6 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -51,7 +50,6 @@ public abstract class BaseMainActivity extends BaseActivity
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
-    private Toolbar toolbar;
     private Menu drawerMenu;
 
     private ImageView imgAvatar;
@@ -65,6 +63,8 @@ public abstract class BaseMainActivity extends BaseActivity
         super.setContentView(R.layout.layout_base_main);
 
         Log.d(TAG, "onCreateNavigationDrawer()");
+
+        this.setToolbar();
 
         myContentLayout = (FrameLayout) findViewById(R.id.my_content_layout);
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
@@ -141,9 +141,6 @@ public abstract class BaseMainActivity extends BaseActivity
         };
         drawerLayout.setDrawerListener(drawerToggle);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-
         drawerMenu = navigationView.getMenu();
         for (int i = 0; i < drawerMenu.size(); i++) {
             drawerMenu.getItem(i).setOnMenuItemClickListener(this);
@@ -202,6 +199,10 @@ public abstract class BaseMainActivity extends BaseActivity
         if (drawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
+        if (item.getItemId() == android.R.id.home) {
+            drawerLayout.openDrawer(GravityCompat.START);
+            return true;
+        }
         // Handle your other action bar items...
         return super.onOptionsItemSelected(item);
     }
@@ -217,12 +218,15 @@ public abstract class BaseMainActivity extends BaseActivity
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 break;
+
             case R.id.nav_setting:
                 Toast.makeText(getContext(), "go to setting screen", Toast.LENGTH_SHORT).show();
                 break;
+
             case R.id.nav_trash:
                 Toast.makeText(getContext(), "go to trash screen", Toast.LENGTH_SHORT).show();
                 break;
+
             case R.id.nav_logout:
                 logout();
                 break;
@@ -289,5 +293,11 @@ public abstract class BaseMainActivity extends BaseActivity
         });
 
         Log.e(TAG, myUser.getId() + " - " + myUser.getEmail() + " - " + myUser.getAvatar());
+    }
+
+    public void setToolbar() {
+        super.setToolbar();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
     }
 }
