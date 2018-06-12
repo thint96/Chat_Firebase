@@ -33,4 +33,6 @@
     <string name="signing_in">Signing in</string>
     <string name="registering">Registering</string>
     <string name="USERS_DATABASE">Users</string>
+    <string name="MESSAGE_RECENT_DATABASE">MessageRecent</string>
+    <string name="DIALOGS_DATABASE">Dialogs</string>
 </resources>
