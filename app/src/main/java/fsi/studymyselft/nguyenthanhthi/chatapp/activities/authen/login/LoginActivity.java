@@ -1,6 +1,5 @@
 package fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.login;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -36,13 +35,11 @@ import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
 public class LoginActivity extends AuthActivity implements LoginView, View.OnClickListener {
 
     private static final String TAG = "LoginActivity";
-    private static final String TITTLE_PROGRESS_DIALOG = "Signing in";
 
     private TextInputLayout textInputLayoutEmail, textInputLayoutPassword;
     private TextInputEditText edtEmail, edtPassword;
     private Button buttonLogin;
     private TextView goToRegister;
-    private ProgressDialog progressDialog;
 
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener authStateListener;
@@ -71,15 +68,10 @@ public class LoginActivity extends AuthActivity implements LoginView, View.OnCli
     }
 
     @Override
-    public void showAuthError() {
-        Toast.makeText(getContext(), R.string.auth_error, Toast.LENGTH_LONG).show();
-    }
-
-    @Override
     public void bindViews() {
         getSupportActionBar().hide();
 
-        showErrorInternetCheckingIfExist(TAG);
+        super.showErrorInternetCheckingIfExist(TAG);
 
         //check to auto-login
         checkUserHasSignedIn();
@@ -213,7 +205,7 @@ public class LoginActivity extends AuthActivity implements LoginView, View.OnCli
         }
 
         if (!hasError(inputEmail, inputPass)) {
-            showProgress(getString(R.string.signing_in), getString(R.string.please_wait));
+            super.showProgress(getString(R.string.signing_in), getString(R.string.please_wait));
             loginWithEmailPassword(inputEmail, inputPass);
         }
     }
@@ -251,14 +243,14 @@ public class LoginActivity extends AuthActivity implements LoginView, View.OnCli
                             //go to List Users Activity
                             startActivity(new Intent(getContext(), ListUserActivity.class));
 
-                            hideProgress();
+                            LoginActivity.super.hideProgress();
                         }
                         else {
                             Log.w(TAG, "signInWithEmailPassword:failure", task.getException());
                             Toast.makeText(getContext(), R.string.login_failed, Toast.LENGTH_SHORT).show();
 
-                            showAuthError();
-                            hideProgress();
+                            LoginActivity.super.showAuthError();
+                            LoginActivity.super.hideProgress();
                         }
                     }
                 });
@@ -275,8 +267,10 @@ public class LoginActivity extends AuthActivity implements LoginView, View.OnCli
                 FirebaseUser userSignedIn = firebaseAuth.getCurrentUser();
                 if (userSignedIn != null) {
                     //user have login but don't logout
+                    LoginActivity.super.showProgress(getString(R.string.loading), getString(R.string.please_wait));
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + userSignedIn.getUid());
                     startActivity(new Intent(LoginActivity.this, ListUserActivity.class));
+                    LoginActivity.super.hideProgress();
                     finish();
                 }
                 else {

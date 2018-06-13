@@ -18,4 +18,6 @@ public interface ChatView extends BaseView {
     void showMessagesList();
 
     void navigateToListUser();
+
+    void navigateToDetailInfoUser();
 }

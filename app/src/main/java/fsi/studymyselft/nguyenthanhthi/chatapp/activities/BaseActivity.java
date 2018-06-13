@@ -2,6 +2,7 @@ package fsi.studymyselft.nguyenthanhthi.chatapp.activities;
 
 import android.app.ProgressDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;

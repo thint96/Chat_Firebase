@@ -1,14 +1,11 @@
 package fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -18,8 +15,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Picasso;
-import com.stfalcon.chatkit.commons.ImageLoader;
 import com.stfalcon.chatkit.messages.MessageHolders;
 import com.stfalcon.chatkit.messages.MessageInput;
 import com.stfalcon.chatkit.messages.MessagesList;
@@ -29,11 +24,12 @@ import fsi.studymyselft.nguyenthanhthi.chatapp.R;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.BaseActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat.holders.CustomIncomingTextMessageViewHolder;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat.holders.CustomOutcomingTextMessageViewHolder;
+import fsi.studymyselft.nguyenthanhthi.chatapp.activities.detailInfoUser.DetailInfoUserActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.listUser.ListUserActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.Dialog;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.Message;
+import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.MessageRecent;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
-import fsi.studymyselft.nguyenthanhthi.chatapp.other.InternetChecking;
 
 public class ChatActivity extends BaseActivity
         implements ChatView, MessageInput.InputListener {
@@ -42,12 +38,12 @@ public class ChatActivity extends BaseActivity
 
     private MessagesList messagesList; //UI - widget
     private MessageInput messageInput; //UI - widget
-    private ProgressDialog progressDialog;
     private Menu menu;
 
     private Dialog myDialog;
     private User myUser, otherUser;
     private Message newMessage;
+    private MessageRecent messageRecentObject;
 
     private MessagesListAdapter<Message> messagesAdapter;
 
@@ -55,7 +51,9 @@ public class ChatActivity extends BaseActivity
     private FirebaseUser currentUser;
     private FirebaseDatabase database;
     private DatabaseReference rootReference, dialogsReference, myDialogReference,
-            messagesReference, membersReference;
+            messagesReference, membersReference, messageRecentReference;
+
+    protected boolean isFirst = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +65,7 @@ public class ChatActivity extends BaseActivity
 
     @Override
     public void bindViews() {
-        showErrorInternetCheckingIfExist(TAG);
+        super.showErrorInternetCheckingIfExist(TAG);
 
         messagesList = (MessagesList) findViewById(R.id.messagesList);
         messageInput = (MessageInput) findViewById(R.id.input);
@@ -110,18 +108,15 @@ public class ChatActivity extends BaseActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         this.menu = menu;
-        getMenuInflater().inflate(R.menu.edit_menu, menu);
+        getMenuInflater().inflate(R.menu.info_dialog_menu, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.copy) {
-            copyToClipBoard();
-            return true;
-        }
-        else if (item.getItemId() == R.id.delete) {
-            deleteMessage();
+        if (item.getItemId() == R.id.info) {
+            //go to activity Detail Dialog
+            navigateToDetailInfoUser();
             return true;
         }
         else if (item.getItemId() == android.R.id.home) {
@@ -149,10 +144,16 @@ public class ChatActivity extends BaseActivity
         rootReference = database.getReference();
 
         //get reference of Dialog Database
-        if (rootReference.child("Dialogs") == null) {
-            rootReference.setValue("Dialogs");
+        if (rootReference.child(getString(R.string.DIALOGS_DATABASE)) == null) {
+            rootReference.setValue(getString(R.string.DIALOGS_DATABASE));
         }
-        dialogsReference = rootReference.child("Dialogs");
+        dialogsReference = rootReference.child(getString(R.string.DIALOGS_DATABASE));
+
+        //get reference of MessageRecent database
+        if (rootReference.child(getString(R.string.MESSAGE_RECENT_DATABASE)) == null) {
+            rootReference.setValue(getString(R.string.MESSAGE_RECENT_DATABASE));
+        }
+        messageRecentReference = rootReference.child(getString(R.string.MESSAGE_RECENT_DATABASE));
 
         //set reference of my dialog in database and get messages in this dialog
         setReferenceToMyDialog();
@@ -167,10 +168,17 @@ public class ChatActivity extends BaseActivity
         startActivity(intent);
     }
 
+    @Override
+    public void navigateToDetailInfoUser() {
+        startActivity(new Intent(getContext(), DetailInfoUserActivity.class));
+    }
+
     private void setReferenceToMyDialog() {
         final String dialogName = (myUser.getId() + "|" + otherUser.getId());
         final String reverseDialogName = (otherUser.getId() + "|" + myUser.getId());
         myDialog.setName(dialogName);
+
+        messageRecentObject = new MessageRecent(dialogName);
 
         dialogsReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -185,6 +193,8 @@ public class ChatActivity extends BaseActivity
                         if (dialog.getName().equals(dialogName) || dialog.getName().equals(reverseDialogName)) {
                             if (dialog.getName().equals(reverseDialogName)) {
                                 myDialog.setName(reverseDialogName); //rename of my dialog if necessary
+
+                                messageRecentObject.setId(reverseDialogName);
                             }
                             myDialog.setId(dialog.getId());
                             isMyDialogExist = true;
@@ -219,42 +229,94 @@ public class ChatActivity extends BaseActivity
         }
         messagesReference = myDialogReference.child("Messages");
 
-        messagesReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    Log.d(TAG, "Total count of messages in my dialog database = " + dataSnapshot.getChildrenCount());
-                    Log.d(TAG, "Total count of messages in messageAdapter = " + messagesAdapter.getItemCount());
-                    Log.d(TAG, "Total count of messages in my Dialog = " + myDialog.getMessages().size());
+        if (isFirst) { //get history message from database
+            super.showProgress(getString(R.string.loading), getString(R.string.please_wait));
 
-                    if (messagesAdapter.getItemCount() != dataSnapshot.getChildrenCount()) {
-                        messagesAdapter.delete(myDialog.getMessages());
-                        myDialog.removeAllMessagesFromListMessages();
-                        for (DataSnapshot messageSnapshot : dataSnapshot.getChildren()) {
-                            Message message = messageSnapshot.getValue(Message.class);
+            messagesReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        Log.d(TAG, "Total count of messages in my dialog database = " + dataSnapshot.getChildrenCount());
+                        Log.d(TAG, "Total count of messages in messageAdapter = " + messagesAdapter.getItemCount());
+                        Log.d(TAG, "Total count of messages in my Dialog = " + myDialog.getMessages().size());
 
-                            //set avatar for other user to show UI
-                            if (currentUser.getUid().equals(message.getUser().getId())) {
-                                //if this message is belong to my user
-                                message.getUser().setAvatar("");
-                            } else { //if this message is belong to other user
-                                message.getUser().setAvatar(otherUser.getAvatar());
+
+                        if (messagesAdapter.getItemCount() != dataSnapshot.getChildrenCount()) {
+                            messagesAdapter.delete(myDialog.getMessages());
+                            myDialog.removeAllMessagesFromListMessages();
+                            for (DataSnapshot messageSnapshot : dataSnapshot.getChildren()) {
+                                Message message = messageSnapshot.getValue(Message.class);
+
+                                //set avatar for other user to show UI
+                                if (currentUser.getUid().equals(message.getUser().getId())) {
+                                    //if this message is belong to my user
+                                    message.getUser().setAvatar("");
+                                } else { //if this message is belong to other user
+                                    message.getUser().setAvatar(otherUser.getAvatar());
+                                }
+
+                                myDialog.addMessageToListMessages(message);
+                                messagesAdapter.updateNewMessage(message);
+                                messagesAdapter.notifyDataSetChanged();
                             }
 
-                            myDialog.addMessageToListMessages(message);
-                            messagesAdapter.updateNewMessage(message);
-                            messagesAdapter.notifyDataSetChanged();
+                            Message recentMessage = myDialog.getLastMessage();
+                            updateNewRecentMessageToDB(recentMessage);
+
+                            isFirst = false;
                         }
                     }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
                 }
-            }
+            });
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+            super.hideProgress();
+        }
+        else { //get the newest message from database (The message has already been sent)
+            myDialogReference.child("Messages").limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        DataSnapshot snapshot = dataSnapshot.getChildren().iterator().next();
+                        Message message = snapshot.getValue(Message.class);
 
-            }
-        });
+                        //set avatar for other user to show UI
+                        if (currentUser.getUid().equals(message.getUser().getId())) {
+                            //if this message is belong to my user
+                            message.getUser().setAvatar("");
+                        } else { //if this message is belong to other user
+                            message.getUser().setAvatar(otherUser.getAvatar());
+                        }
+
+                        myDialog.addMessageToListMessages(message);
+                        messagesAdapter.updateNewMessage(message);
+                        messagesAdapter.notifyDataSetChanged();
+
+                        updateNewRecentMessageToDB(message);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+    }
+
+    private void updateNewRecentMessageToDB(Message newRecentMessage) {
+        messageRecentObject.setMessage(newRecentMessage);
+
+        String key = messageRecentObject.getId();
+        if (messageRecentReference.child(key) == null) {
+            messageRecentReference.setValue(key);
+        }
+        messageRecentReference.child(key).setValue(messageRecentObject);
+
     }
 
     @Override

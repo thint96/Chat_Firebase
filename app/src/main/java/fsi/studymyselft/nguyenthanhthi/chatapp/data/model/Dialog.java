@@ -58,6 +58,10 @@ public class Dialog {
         this.messages.clear();
     }
 
+    public Message getLastMessage() {
+        return this.messages.get(this.messages.size() - 1);
+    }
+
     /**
      * members
      */

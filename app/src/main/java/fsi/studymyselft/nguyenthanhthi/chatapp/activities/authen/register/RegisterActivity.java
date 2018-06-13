@@ -1,6 +1,5 @@
 package fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.register;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,7 +31,6 @@ public class RegisterActivity extends AuthActivity implements RegisterView, View
     private TextInputEditText edtEmail, edtPassword, edtConfirmPassword;
     private Button buttonRegister;
     private TextView goToLogin;
-    private ProgressDialog progressDialog;
 
     private FirebaseAuth auth;
 
@@ -50,7 +48,7 @@ public class RegisterActivity extends AuthActivity implements RegisterView, View
     public void bindViews() {
         getSupportActionBar().hide();
 
-        showErrorInternetCheckingIfExist(TAG);
+        super.showErrorInternetCheckingIfExist(TAG);
 
         textInputLayoutEmail = (TextInputLayout) findViewById(R.id.til_email);
         textInputLayoutPassword = (TextInputLayout) findViewById(R.id.til_password);
@@ -121,7 +119,8 @@ public class RegisterActivity extends AuthActivity implements RegisterView, View
     public void onClick(View v) {
         if (v.getId() == R.id.btn_register) {
             register();
-        } else if (v.getId() == R.id.goToLogin) {
+        }
+        else if (v.getId() == R.id.goToLogin) {
             //go to Login Activity
             navigateToLogIn();
         }
@@ -137,7 +136,7 @@ public class RegisterActivity extends AuthActivity implements RegisterView, View
         String inputPass2 = edtConfirmPassword.getText().toString().trim();
 
         if (!hasError(inputEmail, inputPass, inputPass2)) {
-            showProgress(getString(R.string.registering), getString(R.string.please_wait));
+            super.showProgress(getString(R.string.registering), getString(R.string.please_wait));
             registerWithEmailPassword(inputEmail, inputPass);
         }
     }
@@ -176,14 +175,14 @@ public class RegisterActivity extends AuthActivity implements RegisterView, View
                             //go to List User Activity
                             startActivity(new Intent(getContext(), ListUserActivity.class));
 
-                            hideProgress();
+                            RegisterActivity.super.hideProgress();
                         }
                         else {
                             Log.w(TAG, "createUserEmailPassword:failure", task.getException());
                             Toast.makeText(getContext(), R.string.register_failed, Toast.LENGTH_SHORT).show();
 
-                            showAuthError();
-                            hideProgress();
+                            RegisterActivity.super.showAuthError();
+                            RegisterActivity.super.hideProgress();
                         }
 
                     }
