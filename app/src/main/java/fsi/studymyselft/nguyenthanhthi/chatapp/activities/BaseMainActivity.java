@@ -64,8 +64,6 @@ public abstract class BaseMainActivity extends BaseActivity
 
         Log.d(TAG, "onCreateNavigationDrawer()");
 
-        this.setToolbar();
-
         myContentLayout = (FrameLayout) findViewById(R.id.my_content_layout);
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout); // The base layout that contains your navigation drawer
@@ -126,7 +124,7 @@ public abstract class BaseMainActivity extends BaseActivity
         });
         //end setting header of navigation drawer
 
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, 0, 0) {
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, 0, 0) {
             @Override
             public void onDrawerClosed(View v) {
                 getSupportActionBar().show();
@@ -140,6 +138,9 @@ public abstract class BaseMainActivity extends BaseActivity
             }
         };
         drawerLayout.setDrawerListener(drawerToggle);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
         drawerMenu = navigationView.getMenu();
         for (int i = 0; i < drawerMenu.size(); i++) {
@@ -256,48 +257,5 @@ public abstract class BaseMainActivity extends BaseActivity
                         finish();
                     }
                 });
-    }
-
-    private void setInfoOfMyUser() {
-        currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        myUser = new User(currentUser.getUid(), currentUser.getEmail());
-
-        rootReference = FirebaseDatabase.getInstance().getReference();
-        if (rootReference.child(getString(R.string.USERS_DATABASE)) == null) {
-            rootReference.setValue(getString(R.string.USERS_DATABASE));
-        }
-        usersReference = rootReference.child(getString(R.string.USERS_DATABASE));
-
-        Log.e(TAG, "users reference: " + usersReference.toString());
-
-        usersReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        User user = snapshot.getValue(User.class);
-                        Log.e(TAG, "user element: " + user.getId() + " - " + user.getEmail() + " - " + user.getAvatar());
-                        if (user.getId().equals(currentUser.getUid())) {
-                            myUser.setAvatar(user.getAvatar());
-                            Log.e(TAG, myUser.getId() + " - " + myUser.getEmail() + " - " + myUser.getAvatar());
-                            break;
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        Log.e(TAG, myUser.getId() + " - " + myUser.getEmail() + " - " + myUser.getAvatar());
-    }
-
-    public void setToolbar() {
-        super.setToolbar();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
     }
 }

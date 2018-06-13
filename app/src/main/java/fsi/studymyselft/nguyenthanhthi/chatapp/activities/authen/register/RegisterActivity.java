@@ -1,6 +1,5 @@
 package fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.register;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,7 +31,6 @@ public class RegisterActivity extends AuthActivity implements RegisterView, View
     private TextInputEditText edtEmail, edtPassword, edtConfirmPassword;
     private Button buttonRegister;
     private TextView goToLogin;
-    private ProgressDialog progressDialog;
 
     private FirebaseAuth auth;
 
@@ -48,9 +46,9 @@ public class RegisterActivity extends AuthActivity implements RegisterView, View
 
     @Override
     public void bindViews() {
-        super.showErrorInternetCheckingIfExist(TAG);
+        getSupportActionBar().hide();
 
-        super.setToolbar();
+        super.showErrorInternetCheckingIfExist(TAG);
 
         textInputLayoutEmail = (TextInputLayout) findViewById(R.id.til_email);
         textInputLayoutPassword = (TextInputLayout) findViewById(R.id.til_password);

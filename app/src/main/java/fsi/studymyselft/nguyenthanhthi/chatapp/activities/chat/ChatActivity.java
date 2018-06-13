@@ -1,6 +1,5 @@
 package fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -86,7 +85,8 @@ public class ChatActivity extends BaseActivity
         otherUser = new User(otherUserId, otherUserEmail, otherUserAvatar);
 
         //set name of dialog and show UI
-        this.setToolbar(otherUserEmail);
+        getSupportActionBar().setTitle(otherUserEmail);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //update information users to myDialog
         myDialog.addUserToListUsers(myUser);
@@ -349,11 +349,5 @@ public class ChatActivity extends BaseActivity
         messagesReference.child(key).setValue(newMessage);
 
         return true;
-    }
-
-    @Override
-    public void setToolbar(String title) {
-        super.setToolbar(title);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 }

@@ -1,6 +1,5 @@
 package fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.login;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -41,7 +40,6 @@ public class LoginActivity extends AuthActivity implements LoginView, View.OnCli
     private TextInputEditText edtEmail, edtPassword;
     private Button buttonLogin;
     private TextView goToRegister;
-    private ProgressDialog progressDialog;
 
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener authStateListener;
@@ -71,7 +69,7 @@ public class LoginActivity extends AuthActivity implements LoginView, View.OnCli
 
     @Override
     public void bindViews() {
-        super.setToolbar();
+        getSupportActionBar().hide();
 
         super.showErrorInternetCheckingIfExist(TAG);
 
