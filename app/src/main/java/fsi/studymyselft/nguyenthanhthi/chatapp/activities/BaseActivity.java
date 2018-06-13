@@ -19,7 +19,6 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseView
 
     protected ProgressDialog progressDialog;
     protected ImageLoader imageLoader;
-    protected Toolbar toolbar;
 
     public void showErrorInternetCheckingIfExist(String tag) {
         InternetChecking.checkInternet(getContext(), tag);
@@ -40,15 +39,5 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseView
                 Picasso.with(getContext()).load(url).into(imageView);
             }
         };
-    }
-
-    public void setToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-    }
-
-    public void setToolbar(String title) {
-        setToolbar();
-        setTitle(title);
     }
 }

@@ -35,4 +35,5 @@
     <string name="USERS_DATABASE">Users</string>
     <string name="MESSAGE_RECENT_DATABASE">MessageRecent</string>
     <string name="DIALOGS_DATABASE">Dialogs</string>
+    <string name="title_of_list_user_activity">Danh sách cuộc trò chuyện</string>
 </resources>

@@ -15,9 +15,4 @@ public abstract class AuthActivity extends BaseActivity {
         Toast.makeText(getContext(), R.string.auth_error, Toast.LENGTH_LONG).show();
     }
 
-    public void setToolbar() {
-        super.setToolbar();
-        super.getSupportActionBar().hide();
-    }
-
 }
