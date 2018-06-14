@@ -2,11 +2,13 @@ package fsi.studymyselft.nguyenthanhthi.chatapp.data.model;
 
 import com.stfalcon.chatkit.commons.models.IUser;
 
+import java.io.Serializable;
+
 /**
  * Created by thanhthi on 04/05/2018.
  */
 
-public class User implements IUser {
+public class User implements IUser, Serializable {
 
     private String id;
     private String email;
