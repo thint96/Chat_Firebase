@@ -226,10 +226,8 @@ public class LoginActivity extends AuthActivity implements View.OnClickListener 
                 FirebaseUser userSignedIn = firebaseAuth.getCurrentUser();
                 if (userSignedIn != null) {
                     //user have login but don't logout
-                    showProgress(getString(R.string.loading), getString(R.string.please_wait));
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + userSignedIn.getUid());
                     startActivity(new Intent(LoginActivity.this, ListUserActivity.class));
-                    hideProgress();
                     finish();
                 }
                 else {
