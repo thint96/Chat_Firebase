@@ -60,6 +60,8 @@ public class ListUserActivity extends BaseMainActivity {
 
         setTitle(getString(R.string.title_of_list_user_activity));
 
+        showProgress(getString(R.string.loading), getString(R.string.please_wait));
+
         showUsersList();
 
         lvUsers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -77,8 +79,10 @@ public class ListUserActivity extends BaseMainActivity {
         users = new ArrayList<>();
         messageRecentList = new ArrayList<>();
         items = new ArrayList<>();
-
         lvUsers = (ListView) findViewById(R.id.lvUsers);
+
+        adapter = new ListUserAdapter(getContext(), items);
+        lvUsers.setAdapter(adapter);
 
         //get information of current user
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -99,9 +103,6 @@ public class ListUserActivity extends BaseMainActivity {
         // Save the ListView state (= includes scroll position) as a Parcelable
         Parcelable state = lvUsers.onSaveInstanceState();
 
-        adapter = new ListUserAdapter(getContext(), items);
-
-        lvUsers.setAdapter(adapter);
 
         // Restore previous state (including selected item index and scroll position)
         lvUsers.onRestoreInstanceState(state);
@@ -124,7 +125,7 @@ public class ListUserActivity extends BaseMainActivity {
                         User user = data.getValue(User.class);
                         if (user.getId() != currentUser.getUid() && !user.getEmail().equals(currentUser.getEmail())) { //do not let current user chat with yourself
                             users.add(user);
-//                            adapter.notifyDataSetChanged();
+                            adapter.notifyDataSetChanged();
                         }
                     }
 
@@ -160,6 +161,8 @@ public class ListUserActivity extends BaseMainActivity {
                     Log.e(TAG, "total item in list message recent: " + messageRecentList.size());
 
                     setMessageRecentForUser();
+                    adapter.notifyDataSetChanged();
+                    hideProgress();
 
                     Log.e(TAG, "End of getting data from database");
                 }

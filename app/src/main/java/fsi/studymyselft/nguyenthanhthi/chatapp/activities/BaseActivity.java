@@ -31,7 +31,12 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public void showProgress(String title, String message) {
         if (!((Activity) getContext()).isFinishing()) {
-            progressDialog = ProgressDialog.show(getContext(), title, message);
+            progressDialog = new ProgressDialog(getContext());
+            progressDialog.setIndeterminate(false);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setTitle(title);
+            progressDialog.setMessage(message);
+            progressDialog.show();
         }
     }
 
