@@ -256,6 +256,7 @@ public abstract class BaseMainActivity extends BaseActivity
                         if (authStateListener != null) {
                             FirebaseAuth.getInstance().removeAuthStateListener(authStateListener);
                         }
+                        usersReference.child(currentUser.getUid()).child("online").setValue(false);
                         startActivity(new Intent(getContext(), LoginActivity.class));
                         finish();
                     }

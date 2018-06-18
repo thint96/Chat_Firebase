@@ -15,4 +15,9 @@
         <item name="android:textSize">12sp</item>
     </style>
 
+    <style name="navigation_drawer_no_action_bar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimaryDark">@color/green_dark</item>
+        <item name="colorAccent">@color/white</item>
+    </style>
+
 </resources>

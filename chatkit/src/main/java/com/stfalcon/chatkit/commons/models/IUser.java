@@ -43,4 +43,6 @@ public interface IUser {
     String getAvatar();
 
     void setAvatar(String avatar);
+
+    boolean isOnline();
 }

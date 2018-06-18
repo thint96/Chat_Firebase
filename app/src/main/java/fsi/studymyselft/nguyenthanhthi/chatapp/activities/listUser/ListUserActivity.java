@@ -2,8 +2,10 @@ package fsi.studymyselft.nguyenthanhthi.chatapp.activities.listUser;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -26,6 +28,7 @@ import fsi.studymyselft.nguyenthanhthi.chatapp.data.ItemListDialog;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.Message;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.MessageRecent;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
+import fsi.studymyselft.nguyenthanhthi.chatapp.other.LocationUpdating;
 
 public class ListUserActivity extends BaseMainActivity {
 
@@ -45,6 +48,8 @@ public class ListUserActivity extends BaseMainActivity {
     private FirebaseUser currentUser;
     private DatabaseReference rootReference, userReference, messageRecentReference;
 
+    private LocationUpdating locationUpdating;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +66,8 @@ public class ListUserActivity extends BaseMainActivity {
         setTitle(getString(R.string.title_of_list_user_activity));
 
         showProgress(getString(R.string.loading), getString(R.string.please_wait));
+
+        locationUpdating = new LocationUpdating(getContext());
 
         showUsersList();
 
@@ -80,6 +87,7 @@ public class ListUserActivity extends BaseMainActivity {
         messageRecentList = new ArrayList<>();
         items = new ArrayList<>();
         lvUsers = (ListView) findViewById(R.id.lvUsers);
+        locationUpdating = new LocationUpdating(getContext());
 
         adapter = new ListUserAdapter(getContext(), items);
         lvUsers.setAdapter(adapter);
@@ -111,7 +119,36 @@ public class ListUserActivity extends BaseMainActivity {
     private void updateNewUserToDatabase() {
         String avatar = "http://pluspng.com/img-png/png-doraemon-doraemon-png-180.png";
         User newUser = new User(currentUser.getUid().toString(), currentUser.getEmail().toString(), avatar);
+
+        //set name for current user
+        int end = newUser.getEmail().indexOf("@");
+        String name = newUser.getEmail().substring(0, end);
+        newUser.setName(name);
+
+        //update position for current user
+        String position = locationUpdating.getPositionInOneLine();
+        newUser.setPosition(position);
+
         userReference.child(currentUser.getUid()).setValue(newUser);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 500:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[1] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
+                    //nếu quyền đã được gán
+                    //do nothing
+                }
+                else {
+                    locationUpdating.checkPermission();
+                }
+                return;
+        }
     }
 
     private void pushDataUsersToListUsers() {
@@ -125,7 +162,6 @@ public class ListUserActivity extends BaseMainActivity {
                         User user = data.getValue(User.class);
                         if (user.getId() != currentUser.getUid() && !user.getEmail().equals(currentUser.getEmail())) { //do not let current user chat with yourself
                             users.add(user);
-                            adapter.notifyDataSetChanged();
                         }
                     }
 

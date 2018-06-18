@@ -17,6 +17,7 @@ import fsi.studymyselft.nguyenthanhthi.chatapp.data.ItemListDialog;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.Message;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
 import fsi.studymyselft.nguyenthanhthi.chatapp.other.DrawableHelper;
+import fsi.studymyselft.nguyenthanhthi.chatapp.other.ValidateString;
 
 /**
  * Created by thanhthi on 04/05/2018.
@@ -74,12 +75,15 @@ public class ListUserAdapter extends BaseAdapter {
         txtPosition = convertView.findViewById(R.id.txtPosition);
         messageRecentLayout = convertView.findViewById(R.id.message_recent_layout);
 
+        //set data
+
         User user = items.get(position).getUser();
         Message recentMessage = items.get(position).getRecentMessage();
 
         txtAvatar.setText(user.getEmail().substring(0, 1).toUpperCase());
         txtEmail.setText(user.getEmail());
         txtMessageRecent.setText(recentMessage.getText());
+        txtPosition.setText(ValidateString.validatePosition(user.getPosition()));
 
         //set color background for avatar
         DrawableHelper.withContext(convertView.getContext())
