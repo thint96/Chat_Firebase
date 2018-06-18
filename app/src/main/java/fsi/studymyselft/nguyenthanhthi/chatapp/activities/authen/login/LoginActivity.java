@@ -32,7 +32,7 @@ import fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.register.Regist
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.listUser.ListUserActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
 
-public class LoginActivity extends AuthActivity implements LoginView, View.OnClickListener {
+public class LoginActivity extends AuthActivity implements View.OnClickListener {
 
     private static final String TAG = "LoginActivity";
 
@@ -48,6 +48,8 @@ public class LoginActivity extends AuthActivity implements LoginView, View.OnCli
     private DatabaseReference rootReference, usersReference;
 
     private ArrayList<User> userList;
+
+    private String inputEmail, inputPass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,37 +105,6 @@ public class LoginActivity extends AuthActivity implements LoginView, View.OnCli
     }
 
     @Override
-    public void setUsernameError() {
-        String email = edtEmail.getText().toString().trim();
-
-        if (email.equals("") || TextUtils.isEmpty(email)) { //the string is null or 0-length
-            textInputLayoutEmail.setError(getString(R.string.email_can_not_be_blank));
-        }
-        else if (!email.contains("@")) {
-            textInputLayoutEmail.setError(getString(R.string.invalid_email));
-        }
-    }
-
-    @Override
-    public void setPasswordError() {
-        String password = edtPassword.getText().toString().trim();
-
-        if (password.equals("") || TextUtils.isEmpty(password)) {
-            textInputLayoutPassword.setError(getString(R.string.password_can_not_be_blank));
-        }
-        else if (password.length() < 6) {
-            textInputLayoutPassword.setError(getString(R.string.password_must_have_min_6_characters));
-
-        }
-    }
-
-    @Override
-    public void navigateToSignUp() {
-        Intent intent = new Intent(getContext(), RegisterActivity.class);
-        startActivity(intent);
-    }
-
-    @Override
     public void onClick(View v) {
         if (v.getId() == R.id.btn_login) {
             login();
@@ -142,6 +113,10 @@ public class LoginActivity extends AuthActivity implements LoginView, View.OnCli
             //go to Register Activity
             navigateToSignUp();
         }
+    }
+
+    public void navigateToSignUp() {
+        navigateAuth(getContext(), RegisterActivity.class);
     }
 
     private void pushDataUsersToList() {
@@ -163,6 +138,8 @@ public class LoginActivity extends AuthActivity implements LoginView, View.OnCli
 
             }
         });
+
+        if (userList.isEmpty()) onRestart();
     }
 
     /**
@@ -170,13 +147,13 @@ public class LoginActivity extends AuthActivity implements LoginView, View.OnCli
      */
     private void login() {
         //input email and password of user
-        String inputEmail = edtEmail.getText().toString().trim();
-        String inputPass = edtPassword.getText().toString().trim();
+        inputEmail = edtEmail.getText().toString().trim();
+        inputPass = edtPassword.getText().toString().trim();
 
         //set default email and password
         if (inputEmail.length() == 0 && inputPass.length() == 0) {
-            setUsernameError();
-            setPasswordError();
+            setUsernameError(textInputLayoutEmail, edtEmail);
+            setPasswordError(textInputLayoutPassword, edtPassword);
 
             String defaultEmail = "q@gmail.com";
             String defaultPassword = "123456";
@@ -204,31 +181,13 @@ public class LoginActivity extends AuthActivity implements LoginView, View.OnCli
             login();
         }
 
-        if (!hasError(inputEmail, inputPass)) {
-            super.showProgress(getString(R.string.signing_in), getString(R.string.please_wait));
+        if (!hasError(textInputLayoutEmail, textInputLayoutPassword, edtEmail, edtPassword)) {
+            showProgress(getString(R.string.signing_in), getString(R.string.please_wait));
             loginWithEmailPassword(inputEmail, inputPass);
         }
     }
 
-    private Boolean hasError(String email, String pass) {
-        Boolean hasError = false;
-
-        //check email
-        if (email.equals("") || TextUtils.isEmpty(email) || !email.contains("@")) {
-            setUsernameError();
-            hasError = true;
-        }
-
-        //check password
-        if (pass.equals("") || TextUtils.isEmpty(pass)) {
-            setPasswordError();
-            hasError = true;
-        }
-
-        return hasError;
-    }
-
-    private void loginWithEmailPassword(final String email, String password) {
+    private void loginWithEmailPassword(final String email, final String password) {
         auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -243,14 +202,14 @@ public class LoginActivity extends AuthActivity implements LoginView, View.OnCli
                             //go to List Users Activity
                             startActivity(new Intent(getContext(), ListUserActivity.class));
 
-                            LoginActivity.super.hideProgress();
+                            hideProgress();
                         }
                         else {
                             Log.w(TAG, "signInWithEmailPassword:failure", task.getException());
                             Toast.makeText(getContext(), R.string.login_failed, Toast.LENGTH_SHORT).show();
 
-                            LoginActivity.super.showAuthError();
-                            LoginActivity.super.hideProgress();
+                            showAuthError();
+                            hideProgress();
                         }
                     }
                 });
@@ -267,10 +226,8 @@ public class LoginActivity extends AuthActivity implements LoginView, View.OnCli
                 FirebaseUser userSignedIn = firebaseAuth.getCurrentUser();
                 if (userSignedIn != null) {
                     //user have login but don't logout
-                    LoginActivity.super.showProgress(getString(R.string.loading), getString(R.string.please_wait));
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + userSignedIn.getUid());
                     startActivity(new Intent(LoginActivity.this, ListUserActivity.class));
-                    LoginActivity.super.hideProgress();
                     finish();
                 }
                 else {

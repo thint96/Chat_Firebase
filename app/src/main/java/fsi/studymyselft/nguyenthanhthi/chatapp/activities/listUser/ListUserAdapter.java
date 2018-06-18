@@ -1,34 +1,23 @@
-package fsi.studymyselft.nguyenthanhthi.chatapp.adapter;
+package fsi.studymyselft.nguyenthanhthi.chatapp.activities.listUser;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Random;
 
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
-import fsi.studymyselft.nguyenthanhthi.chatapp.activities.listUser.ListUserActivity;
-import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.Dialog;
+import fsi.studymyselft.nguyenthanhthi.chatapp.data.ItemListDialog;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.Message;
-import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.MessageRecent;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
 import fsi.studymyselft.nguyenthanhthi.chatapp.other.DrawableHelper;
+import fsi.studymyselft.nguyenthanhthi.chatapp.other.ValidateString;
 
 /**
  * Created by thanhthi on 04/05/2018.
@@ -38,7 +27,7 @@ public class ListUserAdapter extends BaseAdapter {
 
     private static final String TAG = "ListUserAdapter";
 
-    private ArrayList<ListUserActivity.Item> items;
+    private ArrayList<ItemListDialog> items;
 
     private LayoutInflater inflater;
 
@@ -46,16 +35,16 @@ public class ListUserAdapter extends BaseAdapter {
     private TextView txtAvatar, txtEmail, txtMessageRecent, txtPosition;
 
 
-    public ListUserAdapter(Context context, ArrayList<ListUserActivity.Item> items) {
+    public ListUserAdapter(Context context, ArrayList<ItemListDialog> items) {
         inflater = LayoutInflater.from(context);
         this.items = items;
     }
 
-    public ArrayList<ListUserActivity.Item> getItems() {
+    public ArrayList<ItemListDialog> getItems() {
         return items;
     }
 
-    public void setItems(ArrayList<ListUserActivity.Item> items) {
+    public void setItems(ArrayList<ItemListDialog> items) {
         this.items = items;
     }
 
@@ -65,7 +54,7 @@ public class ListUserAdapter extends BaseAdapter {
     }
 
     @Override
-    public ListUserActivity.Item getItem(int position) {
+    public ItemListDialog getItem(int position) {
         return items.get(position);
     }
 
@@ -86,12 +75,15 @@ public class ListUserAdapter extends BaseAdapter {
         txtPosition = convertView.findViewById(R.id.txtPosition);
         messageRecentLayout = convertView.findViewById(R.id.message_recent_layout);
 
+        //set data
+
         User user = items.get(position).getUser();
         Message recentMessage = items.get(position).getRecentMessage();
 
         txtAvatar.setText(user.getEmail().substring(0, 1).toUpperCase());
         txtEmail.setText(user.getEmail());
         txtMessageRecent.setText(recentMessage.getText());
+        txtPosition.setText(ValidateString.validatePosition(user.getPosition()));
 
         //set color background for avatar
         DrawableHelper.withContext(convertView.getContext())

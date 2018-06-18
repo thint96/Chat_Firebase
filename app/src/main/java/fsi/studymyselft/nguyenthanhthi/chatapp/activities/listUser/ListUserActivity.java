@@ -2,7 +2,10 @@ package fsi.studymyselft.nguyenthanhthi.chatapp.activities.listUser;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -21,12 +24,13 @@ import java.util.ArrayList;
 import fsi.studymyselft.nguyenthanhthi.chatapp.R;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.BaseMainActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat.ChatActivity;
-import fsi.studymyselft.nguyenthanhthi.chatapp.adapter.ListUserAdapter;
+import fsi.studymyselft.nguyenthanhthi.chatapp.data.ItemListDialog;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.Message;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.MessageRecent;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
+import fsi.studymyselft.nguyenthanhthi.chatapp.other.LocationUpdating;
 
-public class ListUserActivity extends BaseMainActivity implements ListUserView {
+public class ListUserActivity extends BaseMainActivity {
 
     private static final String TAG = "ListUserActivity";
     private static final String USERS_DATABASE = "Users";
@@ -39,12 +43,12 @@ public class ListUserActivity extends BaseMainActivity implements ListUserView {
 
     private ArrayList<User> users;
     private ArrayList<MessageRecent> messageRecentList;
-    private ArrayList<Item> items;
-
-    private FirebaseDatabase database;
-    private DatabaseReference rootReference, userReference, messageRecentReference;
+    private ArrayList<ItemListDialog> items;
 
     private FirebaseUser currentUser;
+    private DatabaseReference rootReference, userReference, messageRecentReference;
+
+    private LocationUpdating locationUpdating;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +56,7 @@ public class ListUserActivity extends BaseMainActivity implements ListUserView {
         setContentView(R.layout.activity_list_user);
 
         bindViews();
+
     }
 
     @Override
@@ -60,48 +65,42 @@ public class ListUserActivity extends BaseMainActivity implements ListUserView {
 
         setTitle(getString(R.string.title_of_list_user_activity));
 
-        super.showProgress(getString(R.string.loading), getString(R.string.please_wait));
+        showProgress(getString(R.string.loading), getString(R.string.please_wait));
+
+        locationUpdating = new LocationUpdating(getContext());
 
         showUsersList();
-
-        super.hideProgress();
 
         lvUsers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //go to ChatActivity
                 Intent intent = new Intent(getContext(), ChatActivity.class);
-                intent.putExtra("EMAIL", users.get(position).getEmail());
-                intent.putExtra("ID", users.get(position).getId());
-                intent.putExtra("AVATAR", users.get(position).getAvatar());
+                intent.putExtra("OtherUser", users.get(position));
                 startActivity(intent);
             }
         });
     }
 
-    @Override
-    public Context getContext() {
-        return ListUserActivity.this;
-    }
-
-    @Override
     public void showUsersList() {
         users = new ArrayList<>();
         messageRecentList = new ArrayList<>();
         items = new ArrayList<>();
-
         lvUsers = (ListView) findViewById(R.id.lvUsers);
+        locationUpdating = new LocationUpdating(getContext());
 
-        database = FirebaseDatabase.getInstance();
-        rootReference = database.getReference();
+        adapter = new ListUserAdapter(getContext(), items);
+        lvUsers.setAdapter(adapter);
+
+        //get information of current user
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         //set reference for Users database
+        rootReference = FirebaseDatabase.getInstance().getReference();
         if (rootReference.child(USERS_DATABASE) == null) {
             rootReference.setValue(USERS_DATABASE);
         }
         userReference = rootReference.child(USERS_DATABASE);
-
-        //get information of current user
-        currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         //update database users if current user have already registered
         updateNewUserToDatabase();
@@ -109,15 +108,47 @@ public class ListUserActivity extends BaseMainActivity implements ListUserView {
         //get all users from database to list "users"
         pushDataUsersToListUsers();
 
-        adapter = new ListUserAdapter(getContext(), items);
+        // Save the ListView state (= includes scroll position) as a Parcelable
+        Parcelable state = lvUsers.onSaveInstanceState();
 
-        lvUsers.setAdapter(adapter);
+
+        // Restore previous state (including selected item index and scroll position)
+        lvUsers.onRestoreInstanceState(state);
     }
 
     private void updateNewUserToDatabase() {
         String avatar = "http://pluspng.com/img-png/png-doraemon-doraemon-png-180.png";
         User newUser = new User(currentUser.getUid().toString(), currentUser.getEmail().toString(), avatar);
+
+        //set name for current user
+        int end = newUser.getEmail().indexOf("@");
+        String name = newUser.getEmail().substring(0, end);
+        newUser.setName(name);
+
+        //update position for current user
+        String position = locationUpdating.getPositionInOneLine();
+        newUser.setPosition(position);
+
         userReference.child(currentUser.getUid()).setValue(newUser);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 500:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[1] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
+                    //nếu quyền đã được gán
+                    //do nothing
+                }
+                else {
+                    locationUpdating.checkPermission();
+                }
+                return;
+        }
     }
 
     private void pushDataUsersToListUsers() {
@@ -131,7 +162,6 @@ public class ListUserActivity extends BaseMainActivity implements ListUserView {
                         User user = data.getValue(User.class);
                         if (user.getId() != currentUser.getUid() && !user.getEmail().equals(currentUser.getEmail())) { //do not let current user chat with yourself
                             users.add(user);
-//                            adapter.notifyDataSetChanged();
                         }
                     }
 
@@ -167,6 +197,10 @@ public class ListUserActivity extends BaseMainActivity implements ListUserView {
                     Log.e(TAG, "total item in list message recent: " + messageRecentList.size());
 
                     setMessageRecentForUser();
+                    adapter.notifyDataSetChanged();
+                    hideProgress();
+
+                    Log.e(TAG, "End of getting data from database");
                 }
             }
 
@@ -179,7 +213,7 @@ public class ListUserActivity extends BaseMainActivity implements ListUserView {
 
     private void setMessageRecentForUser() {
         for (User otherUser : users) {
-            Item item = new Item();
+            ItemListDialog item = new ItemListDialog();
             item.setUser(otherUser);
 
             for (MessageRecent messageRecent : messageRecentList) {
@@ -202,32 +236,8 @@ public class ListUserActivity extends BaseMainActivity implements ListUserView {
         int size = items.size();
     }
 
-    public class Item {
-
-        private User user;
-        private Message recentMessage;
-
-        public Item() {
-        }
-
-        public Item(User user) {
-            this.user = user;
-        }
-
-        public User getUser() {
-            return user;
-        }
-
-        public void setUser(User user) {
-            this.user = user;
-        }
-
-        public Message getRecentMessage() {
-            return recentMessage;
-        }
-
-        public void setRecentMessage(Message recentMessage) {
-            this.recentMessage = recentMessage;
-        }
+    @Override
+    public Context getContext() {
+        return ListUserActivity.this;
     }
 }

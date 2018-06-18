@@ -42,7 +42,7 @@ import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
  */
 
 public abstract class BaseMainActivity extends BaseActivity
-        implements BaseMainView, MenuItem.OnMenuItemClickListener {
+        implements MenuItem.OnMenuItemClickListener {
 
     private static final String TAG = "BaseMainActivity";
 
@@ -58,6 +58,7 @@ public abstract class BaseMainActivity extends BaseActivity
 
     private FirebaseUser currentUser;
     private DatabaseReference rootReference, usersReference;
+    private FirebaseAuth.AuthStateListener authStateListener;
 
     protected void onCreateNavigationDrawer() {
         super.setContentView(R.layout.layout_base_main);
@@ -246,13 +247,16 @@ public abstract class BaseMainActivity extends BaseActivity
 
     //end of adding navigation drawer
 
-    @Override
     public void logout() {
         AuthUI.getInstance()
                 .signOut(this)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
+                        if (authStateListener != null) {
+                            FirebaseAuth.getInstance().removeAuthStateListener(authStateListener);
+                        }
+                        usersReference.child(currentUser.getUid()).child("online").setValue(false);
                         startActivity(new Intent(getContext(), LoginActivity.class));
                         finish();
                     }

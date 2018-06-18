@@ -31,8 +31,7 @@ import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.Message;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.MessageRecent;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
 
-public class ChatActivity extends BaseActivity
-        implements ChatView, MessageInput.InputListener {
+public class ChatActivity extends BaseActivity implements MessageInput.InputListener {
 
     private static final String TAG = "ChatActivity";
 
@@ -79,13 +78,18 @@ public class ChatActivity extends BaseActivity
 
 
         //get information of other User from Intent
-        String otherUserId = getIntent().getStringExtra("ID");
-        String otherUserEmail = getIntent().getStringExtra("EMAIL");
-        String otherUserAvatar = getIntent().getStringExtra("AVATAR");
-        otherUser = new User(otherUserId, otherUserEmail, otherUserAvatar);
+        if (getIntent().getExtras() == null) {
+            Toast.makeText(getContext(), "Can not get data other user from ListUserActivity", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "Can not get data other user from ListUserActivity");
+            navigateToListUser();
+            return;
+        }
+        otherUser = (User) getIntent().getSerializableExtra("OtherUser");
+        Log.e(TAG, "other user: " + otherUser.getId() + " - " + otherUser.getEmail() + " - "
+                + otherUser.getAvatar());
 
         //set name of dialog and show UI
-        getSupportActionBar().setTitle(otherUserEmail);
+        getSupportActionBar().setTitle(otherUser.getEmail());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //update information users to myDialog
@@ -127,17 +131,6 @@ public class ChatActivity extends BaseActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void deleteMessage() {
-
-    }
-
-    @Override
-    public void copyToClipBoard() {
-
-    }
-
-    @Override
     public void showMessagesList() {
         //get reference of root database
         database = FirebaseDatabase.getInstance();
@@ -161,16 +154,26 @@ public class ChatActivity extends BaseActivity
         messagesList.setAdapter(messagesAdapter);
     }
 
-    @Override
     public void navigateToListUser() {
+        //come back List User activity
         Intent intent = new Intent(getContext(), ListUserActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 
-    @Override
     public void navigateToDetailInfoUser() {
-        startActivity(new Intent(getContext(), DetailInfoUserActivity.class));
+        Intent intent = new Intent(getContext(), DetailInfoUserActivity.class);
+        intent.putExtra("OtherUser", otherUser);
+        startActivity(intent);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //get data from Chat Activity
+        if (data != null && resultCode == 10) {
+            otherUser = (User) data.getSerializableExtra("OtherUser");
+        }
     }
 
     private void setReferenceToMyDialog() {
@@ -319,7 +322,6 @@ public class ChatActivity extends BaseActivity
 
     }
 
-    @Override
     public void initMessageAdapter() {
         initImageLoader();
 

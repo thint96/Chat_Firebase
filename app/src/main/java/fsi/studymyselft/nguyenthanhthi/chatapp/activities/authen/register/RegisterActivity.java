@@ -23,7 +23,7 @@ import fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.AuthActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.authen.login.LoginActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.listUser.ListUserActivity;
 
-public class RegisterActivity extends AuthActivity implements RegisterView, View.OnClickListener {
+public class RegisterActivity extends AuthActivity implements View.OnClickListener {
 
     private final String TAG = "RegisterActivity";
 
@@ -70,49 +70,31 @@ public class RegisterActivity extends AuthActivity implements RegisterView, View
         return RegisterActivity.this;
     }
 
-    @Override
-    public void setUsernameError() {
-        String email = edtEmail.getText().toString().trim();
-
-        if (email.equals("") || TextUtils.isEmpty(email)) { //the string is null or 0-length
-            textInputLayoutEmail.setError(getString(R.string.email_can_not_be_blank));
-        }
-        else if (!email.contains("@")) {
-            textInputLayoutEmail.setError(getString(R.string.invalid_email));
-        }
-    }
-
-    @Override
     public void setPasswordError() {
         String password = edtPassword.getText().toString().trim();
         String confirmPassword = edtConfirmPassword.getText().toString().trim();
 
-        boolean isPasswordFieldBlank = false;
+        boolean isPasswordFieldsBlank = false;
 
         //check password
         if (password.equals("") || TextUtils.isEmpty(password)) {
-            textInputLayoutPassword.setError(getString(R.string.password_can_not_be_blank));
-            isPasswordFieldBlank = true;
+            isPasswordFieldsBlank = true;
         }
-        else if (password.length() < 6) {
-            textInputLayoutPassword.setError(getString(R.string.password_must_have_min_6_characters));
-        }
+        setPasswordError(textInputLayoutPassword, edtPassword);
 
         //check confirm password
         if (confirmPassword.equals("") || TextUtils.isEmpty(confirmPassword)) {
             textInputLayoutConfirmPassword.setError(getString(R.string.confirm_password_can_not_be_blank));
-            isPasswordFieldBlank = true;
+            isPasswordFieldsBlank = true;
+        }
+        else if (confirmPassword.length() < 6) {
+            textInputLayoutConfirmPassword.setError(getString(R.string.password_must_have_min_6_characters));
         }
 
-        if (!confirmPassword.equals(password) && !isPasswordFieldBlank) {
+        //check duplication of password fields
+        if (!confirmPassword.equals(password) && !isPasswordFieldsBlank) {
             textInputLayoutConfirmPassword.setError(getString(R.string.password_is_not_duplicated));
         }
-    }
-
-    @Override
-    public void navigateToLogIn() {
-        Intent intent = new Intent(getContext(), LoginActivity.class);
-        startActivity(intent);
     }
 
     @Override
@@ -126,6 +108,10 @@ public class RegisterActivity extends AuthActivity implements RegisterView, View
         }
     }
 
+    public void navigateToLogIn() {
+        navigateAuth(getContext(), LoginActivity.class);
+    }
+
     /**
      * do action register when click button Register
      */
@@ -135,24 +121,20 @@ public class RegisterActivity extends AuthActivity implements RegisterView, View
         String inputPass = edtPassword.getText().toString().trim();
         String inputPass2 = edtConfirmPassword.getText().toString().trim();
 
-        if (!hasError(inputEmail, inputPass, inputPass2)) {
+        if (!hasError(inputPass, inputPass2)) {
             super.showProgress(getString(R.string.registering), getString(R.string.please_wait));
             registerWithEmailPassword(inputEmail, inputPass);
         }
     }
 
-    private boolean hasError(String email, String password, String confirmPassword) {
+    private boolean hasError(String password, String confirmPassword) {
         Boolean hasError = false;
 
-        //check email
-        if (email.equals("") || TextUtils.isEmpty(email) || !email.contains("@")) {
-            setUsernameError();
-            hasError = true;
-        }
+        //check email and password
+        hasError = hasError(textInputLayoutEmail, textInputLayoutPassword, edtEmail, edtPassword);
 
-        //check password
-        if (password.equals("") || TextUtils.isEmpty(password) || !confirmPassword.equals(password)
-                || confirmPassword.equals("") || TextUtils.isEmpty(confirmPassword)) {
+        //check confirm password and duplication of password fields
+        if (confirmPassword.equals("") || TextUtils.isEmpty(confirmPassword) || !confirmPassword.equals(password)) {
             setPasswordError();
             hasError = true;
         }
