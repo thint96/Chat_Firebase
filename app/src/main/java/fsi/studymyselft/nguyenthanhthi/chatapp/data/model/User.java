@@ -14,6 +14,7 @@ public class User implements IUser, Serializable {
     private String email;
     private String name;
     private String avatar;
+    private String position;
     private boolean online;
 
     public User() {
@@ -49,9 +50,22 @@ public class User implements IUser, Serializable {
         this.online = online;
     }
 
+    public User(String id, String email, String name, String avatar, String position, boolean online) {
+        this.id = id;
+        this.email = email;
+        this.name = name;
+        this.avatar = avatar;
+        this.position = position;
+        this.online = online;
+    }
+
     @Override
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
@@ -62,6 +76,15 @@ public class User implements IUser, Serializable {
     @Override
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    @Override
+    public boolean isOnline() {
+        return online;
+    }
+
+    public void setOnline(boolean online) {
+        this.online = online;
     }
 
     public String getId() {
@@ -80,11 +103,11 @@ public class User implements IUser, Serializable {
         this.email = email;
     }
 
-    public boolean isOnline() {
-        return online;
+    public String getPosition() {
+        return position;
     }
 
-    public void setOnline(boolean online) {
-        this.online = online;
+    public void setPosition(String position) {
+        this.position = position;
     }
 }

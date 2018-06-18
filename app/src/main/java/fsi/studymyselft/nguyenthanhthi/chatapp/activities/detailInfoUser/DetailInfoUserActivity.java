@@ -28,6 +28,7 @@ import fsi.studymyselft.nguyenthanhthi.chatapp.R;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.BaseActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.activities.chat.ChatActivity;
 import fsi.studymyselft.nguyenthanhthi.chatapp.data.model.User;
+import fsi.studymyselft.nguyenthanhthi.chatapp.other.ValidateString;
 
 public class DetailInfoUserActivity extends BaseActivity implements View.OnClickListener {
 
@@ -128,25 +129,20 @@ public class DetailInfoUserActivity extends BaseActivity implements View.OnClick
             if (otherUser.getEmail() == null) return;
             int end = otherUser.getEmail().indexOf("@");
             String name = otherUser.getEmail().substring(0, end);
-            txtUsername.setText(standardize(name));
+            txtUsername.setText(ValidateString.validate(name));
         }
         else {
-            txtUsername.setText(standardize(otherUser.getName()));
+            txtUsername.setText(ValidateString.validate(otherUser.getName()));
         }
-        txtEmail.setText(standardize(otherUser.getEmail()));
-        txtPhoneNumber.setText("null");
-        txtAddress.setText("null");
-        txtPosition.setText("null");
+        txtEmail.setText(ValidateString.validate(otherUser.getEmail()));
+        txtPhoneNumber.setText(ValidateString.validate(null));
+        txtAddress.setText(ValidateString.validate(null));
+        txtPosition.setText(ValidateString.validatePosition(otherUser.getPosition()));
     }
 
-    private String standardize(String s) {
-        return s != null ? s : "null";
-    }
-
-    private String standardizePhoneNumber(String phoneNumber) {
-        return phoneNumber.length() != 0 ? phoneNumber : "18008168";
-    }
-
+    /**
+     * start coding about calling phone and sending sms
+     */
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.img_button_phone) {
@@ -159,7 +155,7 @@ public class DetailInfoUserActivity extends BaseActivity implements View.OnClick
 
     private void callThroughSim() {
         Intent callIntent = new Intent(Intent.ACTION_CALL);
-        callIntent.setData(Uri.parse("tel:" + standardizePhoneNumber("")));
+        callIntent.setData(Uri.parse("tel:" + ValidateString.validatePhoneNumber("")));
 
         checkPermission("call");
         startActivity(callIntent);
@@ -167,7 +163,7 @@ public class DetailInfoUserActivity extends BaseActivity implements View.OnClick
 
     private void sendSms() {
         Intent sendSmsIntent = new Intent(Intent.ACTION_VIEW);
-        sendSmsIntent.setData(Uri.parse("sms:" + standardizePhoneNumber("")));
+        sendSmsIntent.setData(Uri.parse("sms:" + ValidateString.validatePhoneNumber("")));
 
         checkPermission("send");
         startActivity(sendSmsIntent);
@@ -220,6 +216,10 @@ public class DetailInfoUserActivity extends BaseActivity implements View.OnClick
                 return;
         }
     }
+
+    /**
+     * end coding about calling phone and sending sms
+     */
 
     @Override
     public Context getContext() {
